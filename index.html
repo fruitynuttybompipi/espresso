@@ -246,7 +246,7 @@ async function sync(){
    const r=await pull();
    setData(merge({beans,shots,deleted},r.data));persist();render();
    const body=JSON.stringify({beans,shots,deleted});
-   if(JSON.stringify(merge(r.data,{}))===body){ok=true;break}
+   if(r.sha&&JSON.stringify(merge(r.data,{}))===body){ok=true;break}
    const res=await fetch(api(),{method:'PUT',headers:hdr(),body:JSON.stringify({message:'Update espresso log',content:b64(body),sha:r.sha||undefined})});
    if(res.ok)ok=true;
    else if(res.status!==409&&res.status!==422)throw new Error('put'+res.status);
