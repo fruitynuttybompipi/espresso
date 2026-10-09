@@ -162,6 +162,30 @@ button:active{transform:scale(.96)}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 .empty::before{content:'';display:block;width:34px;height:34px;margin:0 auto 12px;background:var(--mute);opacity:.45;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z'/%3E%3Cpath d='M16 10h1.5a2.5 2.5 0 0 1 0 5H16'/%3E%3Cpath d='M8 3v2M12 3v2'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z'/%3E%3Cpath d='M16 10h1.5a2.5 2.5 0 0 1 0 5H16'/%3E%3Cpath d='M8 3v2M12 3v2'/%3E%3C/svg%3E") center/contain no-repeat}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;animation-delay:0s!important;transition-duration:.01ms!important}}
+.switch{position:relative;display:grid;grid-template-columns:1fr 1fr;width:100%;max-width:340px;padding:4px;margin-bottom:24px;background:var(--card);border-radius:99px}
+.switch::before{content:'';position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:99px;background:var(--btn);transition:transform .35s cubic-bezier(.2,.7,.2,1)}
+.switch[data-m=pour]::before{transform:translateX(100%)}
+.switch button{position:relative;z-index:1;background:transparent;color:var(--mute);font-weight:400}
+.switch button[aria-pressed=true]{color:#fff;font-weight:600}
+.pop-in{animation:rise .4s cubic-bezier(.2,.7,.2,1) both}
+.rc{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;text-align:left;background:var(--card);color:var(--ink);border-radius:14px;padding:16px 18px;font-weight:400;border:1.5px solid transparent;margin-bottom:10px}
+.rc .n{display:block;font:400 18px/1.3 Georgia,serif}
+.rc .tag{display:inline-block;margin-top:8px;font-size:12px;line-height:1.4;padding:3px 10px;border-radius:99px;background:var(--bg);color:var(--mute)}
+.rc>svg{width:20px;height:20px;opacity:0;color:var(--btn);transition:opacity .2s}
+.rc[aria-pressed=true]{border-color:var(--btn)}
+.rc[aria-pressed=true]>svg{opacity:1}
+.recipe{margin:-2px 0 18px;animation:rise .4s cubic-bezier(.2,.7,.2,1) both}
+.recipe .facts{margin-top:0;grid-template-columns:repeat(2,1fr)}
+.steps{width:100%;border-collapse:collapse;margin-top:22px;font-size:14px}
+.steps th{font-size:12px;font-weight:400;color:var(--mute);text-align:left;padding:0 8px 8px}
+.steps td{padding:11px 8px;border-top:1px solid var(--line);vertical-align:top}
+.steps th:first-child,.steps td:first-child{padding-left:0;white-space:nowrap;font-variant-numeric:tabular-nums}
+.steps td:first-child{font-weight:600}
+.steps th:last-child,.steps td:last-child{padding-right:0;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.tech{margin-top:20px;padding:14px 16px;border-left:3px solid var(--btn);background:var(--bg);border-radius:0 10px 10px 0}
+.tech .k{font-size:12px;color:var(--mute)}
+.tech p{margin:4px 0 0;font-size:14px;line-height:1.55}
+@media(min-width:561px){.recipe .facts{grid-template-columns:repeat(3,1fr)}}
 </style>
 </head>
 <body>
@@ -176,7 +200,8 @@ button:active{transform:scale(.96)}
 </div>
 
 <div id="v-log">
-<section>
+<div class="switch" id="mode" data-m="espresso" role="group" aria-label="Brew type"><button data-m="espresso" aria-pressed="true">Espresso</button><button data-m="pour" aria-pressed="false">Pour over</button></div>
+<section id="m-espresso">
 <div class="card" id="nobeans" hidden>
 <p style="margin:0 0 14px" id="nobeans-msg">Create a bean profile first, then pick it here each time you pull a shot.</p>
 <button id="go-beans">Add a bean</button>
@@ -205,6 +230,11 @@ button:active{transform:scale(.96)}
 </div>
 </section>
 
+<section id="m-pour" hidden>
+<h2>Pour over</h2>
+<p class="info" style="margin:0 0 18px">Pick a recipe to see the steps.</p>
+<div id="recipes"></div>
+</section>
 </div>
 
 <div id="v-overview" hidden>
@@ -299,6 +329,7 @@ const IC={
  check:'<path d="M5 12.5l4.5 4.5L19 7"/>',
  done:'<circle cx="12" cy="12" r="8.5"/><path d="M8.2 12.4l2.5 2.5 5-5.3"/>',
  edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',
+ drip:'<path d="M4.5 5h15L14 12.5V17h-4v-4.5z"/><path d="M7.5 21h9"/>',
  trash:'<path d="M5 7h14M10 7V4.5h4V7M7 7l.9 12.5h8.2L17 7M10.2 11v5.5M13.8 11v5.5"/>'
 };
 const icon=n=>`<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n]}</svg>`;
@@ -432,7 +463,7 @@ $('bn-save').onclick=()=>{
 $('bean-list').onclick=e=>{
  const t=e.target.closest('button');if(!t)return;
  const id=t.dataset.id,a=t.dataset.a,b=beanOf(id);if(!b)return;
- if(a==='log'){setSel(id);editShot=null;editFrom=null;endEdit();show('log');render()}
+ if(a==='log'){setSel(id);editShot=null;editFrom=null;setMode('espresso',true);endEdit();show('log');render()}
  if(a==='fin'){b.finished=today();b.u=Date.now();flash=b.id;commit();toast('Bean finished');return}
  if(a==='edit'){
   editing=id;$('bn-name').value=b.name;$('bn-date').value=b.bought;$('bn-weight').value=b.weight||'';$('bn-price').value=b.price||'';$('bn-roasted').value=b.roasted||'';$('bn-fin-wrap').hidden=false;$('bn-finished').value=b.finished||'';document.querySelectorAll('input[name=tag]').forEach(c=>c.checked=(b.tags||[]).includes(c.value));
@@ -535,7 +566,7 @@ $('save').onclick=()=>{
 };
 function startEdit(id){
  const s=shots.find(x=>String(x.id)===id);if(!s)return;
- editFrom=view;editShot=s.id;setSel(s.beanId);renderSel();
+ setMode('espresso',true);editFrom=view;editShot=s.id;setSel(s.beanId);renderSel();
  ['dose','yield','time','clicks'].forEach(k=>$(k).value=s[k]??'');
  $('notes').value=s.notes||'';
  document.querySelectorAll('input[name=taste]').forEach(r=>r.checked=r.value===s.taste);
@@ -635,6 +666,50 @@ function render(){
  renderSel();renderBeans();week();stats();chart();list();flash=null;
 }
 
+/* pour over */
+const RECIPES=[
+ {id:'kasuya',name:'Tetsu Kasuya 4:6 Method',tag:'Focus: sweetness, acidity and strength control',
+  specs:[['Coffee','20g'],['Water','300g'],['Ratio','1:15'],['Temperature','92–93°C'],['Grind','Medium-coarse to coarse'],['Target finish','3:30–3:45']],
+  steps:[['0:00','Pour 60g','60g'],['0:45','Pour another 60g','120g'],['1:30','Pour another 60g','180g'],['2:15','Pour another 60g','240g'],['3:00','Pour final 60g','300g'],['3:30–3:45','Aim to finish drawdown','300g']],
+  tech:'Pour gently in circles. Allow the water to drain between pours. For a sweeter profile, try 50g for the first pour and 70g for the second.'},
+ {id:'hoffmann',name:'James Hoffmann V60 Method',tag:'Focus: balanced extraction and clarity',
+  specs:[['Coffee','30g'],['Water','500g'],['Ratio','1:16.7'],['Temperature','100°C for light roasts, adjust lower for darker roasts'],['Grind','Medium-fine'],['Target finish','3:00–3:30 (approximate)']],
+  steps:[['0:00','Bloom with 60g; wet all grounds','60g'],['0:00–0:45','Wait for bloom','60g'],['0:45','Pour steadily to 300g','300g'],['Around 1:15','Finish the second pour, reaching 500g','500g'],['1:15–1:45','Gently swirl the dripper to level the bed','500g'],['3:00–3:30','Aim to finish drawdown','500g']],
+  tech:'Keep the pour controlled and avoid aggressive agitation. Swirl gently after pouring to help level the coffee bed.'},
+ {id:'rao',name:'Scott Rao-style V60 Method',tag:'Focus: even extraction and sweetness',
+  specs:[['Coffee','22g'],['Water','360g'],['Ratio','1:16.4'],['Temperature','96°C'],['Grind','Medium-fine'],['Target finish','4:00–4:30']],
+  steps:[['0:00','Bloom with 44g','44g'],['0:05','Gently stir to wet all grounds','44g'],['0:30','Begin continuous pour to 360g','360g'],['By 1:30','Finish pouring','360g'],['1:35','Stir gently clockwise, then anticlockwise','360g'],['1:45','Gently swirl to level the bed','360g'],['4:00–4:30','Aim to finish drawdown','360g']],
+  tech:'This recipe uses stirring and swirling to distribute water evenly rather than relying on multiple separate pours.'}
+];
+let mode='espresso',recipe='';
+try{mode=localStorage.getItem('espresso-mode')==='pour'?'pour':'espresso';recipe=localStorage.getItem('espresso-recipe')||''}catch(e){}
+function setMode(m,quiet){
+ mode=m;try{localStorage.setItem('espresso-mode',m)}catch(e){}
+ $('mode').dataset.m=m;
+ [...$('mode').children].forEach(b=>b.setAttribute('aria-pressed',b.dataset.m===m));
+ $('m-espresso').hidden=m!=='espresso';$('m-pour').hidden=m!=='pour';
+ const el=$('m-'+m);el.classList.remove('pop-in');
+ if(!quiet){void el.offsetWidth;el.classList.add('pop-in')}
+}
+$('mode').onclick=e=>{const b=e.target.closest('button');if(b&&b.dataset.m!==mode)setMode(b.dataset.m)};
+[...$('mode').children].forEach(b=>{b.innerHTML=icon(b.dataset.m==='pour'?'drip':'cup')+b.textContent});
+function recipeHtml(r){
+ const F=(k,v)=>`<div><span class="k">${esc(k)}</span><span class="v">${esc(v)}</span></div>`;
+ return `<div class="card recipe"><div class="facts">${r.specs.map(x=>F(x[0],x[1])).join('')}</div>
+ <table class="steps"><thead><tr><th>Time</th><th>Action</th><th>Total water</th></tr></thead><tbody>${r.steps.map(x=>`<tr><td>${esc(x[0])}</td><td>${esc(x[1])}</td><td>${esc(x[2])}</td></tr>`).join('')}</tbody></table>
+ <div class="tech"><span class="k">Technique</span><p>${esc(r.tech)}</p></div></div>`;
+}
+function renderRecipes(){
+ $('recipes').innerHTML=RECIPES.map(r=>`<button class="rc" data-r="${r.id}" aria-pressed="${recipe===r.id}"><span><span class="n">${esc(r.name)}</span><span class="tag">${esc(r.tag)}</span></span>${icon('check')}</button>`+(recipe===r.id?recipeHtml(r):'')).join('');
+}
+$('recipes').onclick=e=>{
+ const b=e.target.closest('.rc');if(!b)return;
+ const id=b.dataset.r;recipe=recipe===id?'':id;
+ try{localStorage.setItem('espresso-recipe',recipe)}catch(x){}
+ renderRecipes();
+ const nb=$('recipes').querySelector('[data-r="'+id+'"]');if(nb)nb.focus();
+};
+
 /* settings and backup */
 const SET=[['gh-repo','repo'],['gh-path','path'],['gh-token','token']];
 SET.forEach(([i,k])=>{$(i).value=cfg[k]||''});
@@ -668,7 +743,7 @@ $('pref-cur').value=curr;
 $('pref-cur').oninput=e=>{curr=e.target.value;try{localStorage.setItem('espresso-cur',curr)}catch(x){}render()};
 setSync(cfg.token&&cfg.repo?'':'Saved on this device only');
 setBtn($('save'),'Log shot','plus');setBtn($('bn-save'),'Add bean','plus');
-render();prefill();
+render();prefill();renderRecipes();setMode(mode,true);
 show(beans.length?'log':'beans');
 sync();
 </script>
