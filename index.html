@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Espresso Log</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%98%95%3C/text%3E%3C/svg%3E">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#eeeeea;--card:#f9f9f6;--ink:#1d1b19;--mute:#807b74;--line:#dcdbd5;--acc:#1d1b19;--band:rgba(88,120,100,.14);--sour:#c58f2c;--bal:#587864;--bit:#7a5a6e}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141311;--card:#1c1b18;--ink:#ece9e3;--mute:#8d887f;--line:#2e2c28;--acc:#ece9e3;--band:rgba(120,160,135,.16);--sour:#d9a441;--bal:#7ba78b;--bit:#a8869a}}
+:root[data-theme="dark"]{--bg:#141311;--card:#1c1b18;--ink:#ece9e3;--mute:#8d887f;--line:#2e2c28;--acc:#ece9e3;--band:rgba(120,160,135,.16);--sour:#d9a441;--bal:#7ba78b;--bit:#a8869a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,"Helvetica Neue",Inter,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+main{max-width:720px;margin:0 auto;padding:40px 20px 80px}
+h1{font:400 34px/1.1 Georgia,"Iowan Old Style",serif;letter-spacing:-.01em;margin:0 0 4px}
+.sub{color:var(--mute);margin:0 0 32px}
+section{margin-bottom:44px}
+h2{font:400 20px Georgia,serif;margin:0 0 14px}
+.card{background:var(--card);border-radius:14px;padding:20px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.f{display:flex;flex-direction:column;gap:5px;min-width:0}
+.span2{grid-column:span 2}.span4{grid-column:span 4}
+label.l,.l{font-size:13px;color:var(--mute)}
+input[type=text],input[type=number],input[type=date]{width:100%;font:inherit;color:var(--ink);background:transparent;border:0;border-bottom:1px solid var(--line);padding:6px 0;border-radius:0;outline:0}
+input:focus{border-bottom-color:var(--ink)}
+input[type=number]{font-variant-numeric:tabular-nums;-moz-appearance:textfield}
+input::-webkit-inner-spin-button{display:none}
+.seg{display:flex;gap:4px;flex-wrap:wrap}
+.seg label{cursor:pointer}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg span{display:inline-block;padding:5px 12px;border-radius:99px;border:1px solid var(--line);font-size:14px;color:var(--mute)}
+.seg input:checked+span{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.seg input:focus-visible+span,button:focus-visible,select:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.live{display:flex;align-items:baseline;gap:22px;margin-top:22px;padding-top:18px;border-top:1px solid var(--line);flex-wrap:wrap}
+.big{font:400 44px/1 Georgia,serif;font-variant-numeric:tabular-nums}
+.big small{font:13px -apple-system,sans-serif;color:var(--mute);margin-left:6px}
+.live .n{margin-left:auto}
+button{font:inherit;cursor:pointer;border:0;border-radius:99px;padding:10px 22px;background:var(--ink);color:var(--bg)}
+button.q{background:transparent;color:var(--mute);padding:4px 8px}
+button.q:hover{color:var(--ink)}
+.stats{display:flex;gap:28px;margin-bottom:14px;flex-wrap:wrap}
+.stats div b{display:block;font:400 22px Georgia,serif;font-variant-numeric:tabular-nums}
+.stats div span{font-size:13px;color:var(--mute)}
+.bar{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+.tabs{display:flex;gap:2px}
+.tabs button{background:transparent;color:var(--mute);padding:5px 12px}
+.tabs button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+select{font:inherit;color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:99px;padding:5px 12px}
+svg{width:100%;height:auto;display:block;overflow:visible}
+svg text{fill:var(--mute);font:11px -apple-system,sans-serif}
+.legend{display:flex;gap:16px;font-size:13px;color:var(--mute);margin-top:10px;flex-wrap:wrap}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}
+.empty{color:var(--mute);padding:36px 0;text-align:center}
+.row{display:grid;grid-template-columns:1fr auto;gap:4px 16px;padding:16px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border:0}
+.row .t{font:400 17px Georgia,serif}
+.row .m{color:var(--mute);font-size:13px}
+.row .d{font-variant-numeric:tabular-nums;display:flex;gap:16px;align-items:baseline;flex-wrap:wrap}
+.row .d span{white-space:nowrap}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.note{grid-column:1/-1;color:var(--mute);font-size:13px;font-style:italic}
+summary{cursor:pointer;font:400 20px Georgia,serif;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary:focus-visible{outline:2px solid var(--ink);outline-offset:4px}
+.help{color:var(--mute);font-size:13px;margin:16px 0}
+.acts{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+@media(max-width:560px){.grid{grid-template-columns:repeat(2,1fr)}.span2,.span4{grid-column:span 2}.live .n{margin-left:0}main{padding-top:28px}}
+
+[hidden]{display:none!important}
+.nav{margin-bottom:32px}
+.pick{width:100%;border-radius:10px;padding:10px 12px;font-size:16px;background:var(--card)}
+.info{color:var(--mute);font-size:13px}
+.brow{display:grid;grid-template-columns:1fr auto;gap:2px 16px;padding:16px 0;border-bottom:1px solid var(--line);align-items:center}
+.brow:last-child{border:0}
+.brow .t{font:400 19px Georgia,serif}
+.brow .acts{justify-content:flex-end}
+.brow button{padding:5px 12px}
+button.warn{background:#a2412f;color:#fff}
+.lead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:12px}
+.lead h2{margin:0}
+.help{color:var(--mute);font-size:13px;margin:16px 0}
+.acts{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<main>
+<h1>Espresso log</h1>
+<p class="sub">Dial in, write it down, see the trend. <span id="sync"></span></p>
+<div class="tabs nav" id="nav">
+<button data-v="log" aria-pressed="true">Log</button>
+<button data-v="beans" aria-pressed="false">Beans</button>
+<button data-v="settings" aria-pressed="false">Sync and backup</button>
+</div>
+
+<div id="v-log">
+<section>
+<div class="card" id="nobeans" hidden>
+<p style="margin:0 0 14px">Create a bean profile first, then pick it here each time you pull a shot.</p>
+<button id="go-beans">Add a bean</button>
+</div>
+<div class="card" id="logform">
+<div class="grid">
+<div class="f span4"><label class="l" for="sel">Bean</label><select id="sel" class="pick"></select><div class="info" id="beaninfo"></div></div>
+<div class="f"><label class="l" for="dose">Dose in (g)</label><input type="number" id="dose" step="0.1" inputmode="decimal" placeholder="18"></div>
+<div class="f"><label class="l" for="yield">Yield out (g)</label><input type="number" id="yield" step="0.1" inputmode="decimal" placeholder="36"></div>
+<div class="f"><label class="l" for="time">Time (s)</label><input type="number" id="time" step="0.5" inputmode="decimal" placeholder="28"></div>
+<div class="f"><label class="l" for="clicks">Grinder clicks</label><input type="number" id="clicks" step="0.5" inputmode="decimal" placeholder="14"></div>
+<div class="f span4"><span class="l">Taste</span>
+<div class="seg"><label><input type="radio" name="taste" value="Sour"><span>Sour</span></label><label><input type="radio" name="taste" value="Balanced"><span>Balanced</span></label><label><input type="radio" name="taste" value="Bitter"><span>Bitter</span></label></div></div>
+<div class="f span4"><label class="l" for="notes">Notes</label><input type="text" id="notes" placeholder="Blueberry, a little thin. Try finer."></div>
+</div>
+<div class="live">
+<div class="big" id="ratio">1:–<small>ratio</small></div>
+<div class="big" id="flow">–<small>g/s</small></div>
+<div class="big" id="age">–<small>days since purchase</small></div>
+<button class="n" id="save">Log shot</button>
+</div>
+</div>
+</section>
+
+<section>
+<h2>Trend</h2>
+<div class="stats" id="stats"></div>
+<div class="bar">
+<div class="tabs" id="tabs"></div>
+<select id="filter" aria-label="Filter by bean"></select>
+</div>
+<div class="card"><div id="chart"></div>
+<div class="legend"><span><i style="background:var(--sour)"></i>Sour</span><span><i style="background:var(--bal)"></i>Balanced</span><span><i style="background:var(--bit)"></i>Bitter</span><span><i style="background:var(--band);width:18px;border-radius:3px"></i>Target range</span></div></div>
+</section>
+
+<section>
+<h2>Shots</h2>
+<div id="list"></div>
+</section>
+</div>
+
+<div id="v-beans" hidden>
+<section>
+<h2 id="bn-title">New bean</h2>
+<div class="card">
+<div class="grid">
+<div class="f span2"><label class="l" for="bn-name">Bean name</label><input type="text" id="bn-name" placeholder="Ethiopia Guji, Origin Roasters" autocomplete="off"></div>
+<div class="f span2"><label class="l" for="bn-date">Date of purchase</label><input type="date" id="bn-date"></div>
+<div class="f span4"><span class="l">Roast</span>
+<div class="seg"><label><input type="radio" name="roast" value="Light"><span>Light</span></label><label><input type="radio" name="roast" value="Medium" checked><span>Medium</span></label><label><input type="radio" name="roast" value="Dark"><span>Dark</span></label></div></div>
+</div>
+<div class="acts" style="margin-top:22px"><button id="bn-save">Add bean</button><button class="q" id="bn-cancel" hidden>Cancel</button></div>
+</div>
+</section>
+<section>
+<h2>Your beans</h2>
+<div id="bean-list"></div>
+</section>
+</div>
+
+<div id="v-settings" hidden>
+<section>
+<h2>Sync with GitHub</h2>
+<div class="card">
+<div class="grid">
+<div class="f span2"><label class="l" for="gh-repo">Data repo (owner/name)</label><input type="text" id="gh-repo" placeholder="yourname/espresso-data" autocomplete="off"></div>
+<div class="f span2"><label class="l" for="gh-path">File path</label><input type="text" id="gh-path" placeholder="espresso-log.json" autocomplete="off"></div>
+<div class="f span4"><label class="l" for="gh-token">Access token</label><input type="text" id="gh-token" placeholder="github_pat_..." autocomplete="off" style="-webkit-text-security:disc"></div>
+</div>
+<p class="help">Use a private repo, separate from this site. Create a fine-grained token limited to that repo with Contents set to read and write. The token stays in this browser only, so enter it once per device.</p>
+<div class="acts"><button id="gh-save">Save and sync</button><button class="q" id="gh-off">Disconnect</button></div>
+</div>
+</section>
+<section>
+<h2>Backup</h2>
+<div class="card"><div class="acts"><button class="q" id="ex-json">Export JSON</button><button class="q" id="ex-csv">Export CSV</button><label class="q" style="cursor:pointer;padding:4px 8px;color:var(--mute)">Import JSON<input type="file" id="im" accept=".json,application/json" hidden></label></div></div>
+</section>
+</div>
+</main>
+
+<script>
+const KEY='espresso-log-v2',OLDKEY='espresso-log-v1',CK='espresso-gh-v1',SELK='espresso-sel';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=p=>p+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const hash=s=>{let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))|0;return 'b'+Math.abs(h).toString(36)};
+const sk=(x,y)=>String(x)<String(y)?-1:1;
+const today=()=>{const d=new Date();return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
+const days=(a,b)=>a&&b?Math.max(0,Math.round((new Date(b)-new Date(a))/864e5)):0;
+const dstr=t=>new Date(t).toISOString().slice(0,10);
+const radio=n=>(document.querySelector(`input[name=${n}]:checked`)||{}).value||'';
+const val=n=>{const v=parseFloat($(n).value);return isFinite(v)?v:0};
+
+/* data: beans, shots, deleted (ids of removed beans and shots) */
+function norm(d){
+ d=d||{};
+ const beans=(d.beans||[]).map(b=>({...b})),shots=(d.shots||[]).map(x=>({...x}));
+ const bm=new Map(beans.map(b=>[b.id,b]));
+ shots.forEach(x=>{
+  if(!x.beanId&&x.bean){
+   const id=hash([x.bean,x.roast,x.bought].join('|'));
+   if(!bm.has(id)){const b={id,name:x.bean,roast:x.roast||'Medium',bought:x.bought||'',at:x.at,u:x.at};bm.set(id,b);beans.push(b)}
+   x.beanId=id;
+  }
+  delete x.bean;delete x.roast;delete x.bought;
+ });
+ return{beans,shots,deleted:[...(d.deleted||[])]};
+}
+function merge(a,b){
+ a=norm(a);b=norm(b);
+ const del=new Set([...a.deleted,...b.deleted]);
+ const bm=new Map();
+ [...a.beans,...b.beans].forEach(x=>{if(del.has(x.id))return;const o=bm.get(x.id);if(!o||(x.u||0)>(o.u||0))bm.set(x.id,x)});
+ const sm=new Map();
+ [...a.shots,...b.shots].forEach(x=>{if(!del.has(x.id)&&bm.has(x.beanId))sm.set(x.id,x)});
+ return{beans:[...bm.values()].sort((x,y)=>(x.at||0)-(y.at||0)),shots:[...sm.values()].sort((x,y)=>x.at-y.at),deleted:[...del].sort(sk)};
+}
+let beans=[],shots=[],deleted=[];
+const setData=d=>{beans=d.beans;shots=d.shots;deleted=d.deleted};
+try{setData(merge(JSON.parse(localStorage.getItem(KEY)||localStorage.getItem(OLDKEY)),{}))}catch(e){}
+const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify({beans,shots,deleted}))}catch(e){}};
+const beanOf=id=>beans.find(b=>b.id===id);
+const bname=id=>(beanOf(id)||{name:'Unknown bean'}).name;
+
+/* GitHub sync */
+let cfg={};try{cfg=JSON.parse(localStorage.getItem(CK))||{}}catch(e){}
+const setSync=t=>{$('sync').textContent=t?'\u00a0'+t:''};
+const b64=x=>btoa(unescape(encodeURIComponent(x)));
+const unb64=x=>decodeURIComponent(escape(atob(x.replace(/\s/g,''))));
+const api=()=>'https://api.github.com/repos/'+cfg.repo+'/contents/'+(cfg.path||'espresso-log.json');
+const hdr=()=>({Authorization:'Bearer '+cfg.token,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'});
+let busy=false,again=false,timer=null;
+async function pull(){
+ const r=await fetch(api(),{headers:hdr(),cache:'no-store'});
+ if(r.status===404)return{data:{},sha:null};
+ if(!r.ok)throw new Error('http'+r.status);
+ const j=await r.json();
+ let d={};try{d=JSON.parse(unb64(j.content))}catch(e){}
+ return{data:d,sha:j.sha};
+}
+async function sync(){
+ if(!cfg.token||!cfg.repo)return;
+ if(busy){again=true;return}
+ busy=true;setSync('Syncing');
+ try{
+  let ok=false;
+  for(let t=0;t<3&&!ok;t++){
+   const r=await pull();
+   setData(merge({beans,shots,deleted},r.data));persist();render();
+   const body=JSON.stringify({beans,shots,deleted});
+   if(JSON.stringify(merge(r.data,{}))===body){ok=true;break}
+   const res=await fetch(api(),{method:'PUT',headers:hdr(),body:JSON.stringify({message:'Update espresso log',content:b64(body),sha:r.sha||undefined})});
+   if(res.ok)ok=true;
+   else if(res.status!==409&&res.status!==422)throw new Error('put'+res.status);
+  }
+  setSync(ok?'Synced to GitHub':'Sync conflict, will retry');
+ }catch(e){
+  const c=String(e.message);
+  setSync(c.endsWith('401')||c.endsWith('403')?'GitHub rejected the token':c==='put404'?'Repo not found, check name and token access':'Offline, saved on this device');
+ }
+ busy=false;
+ if(again){again=false;sync()}
+}
+function queueSync(){if(!cfg.token||!cfg.repo)return;setSync('Saving');clearTimeout(timer);timer=setTimeout(sync,1200)}
+const commit=()=>{persist();queueSync();render()};
+
+/* navigation */
+let view='log';
+function show(v){
+ view=v;
+ ['log','beans','settings'].forEach(k=>$('v-'+k).hidden=k!==v);
+ [...$('nav').children].forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===v));
+ scrollTo(0,0);
+}
+$('nav').onclick=e=>{const v=e.target.dataset.v;if(v)show(v)};
+$('go-beans').onclick=()=>{show('beans');$('bn-name').focus()};
+
+/* beans */
+let editing=null,armed=null,armT=null;
+$('bn-date').value=today();
+function resetBeanForm(){
+ editing=null;$('bn-name').value='';$('bn-date').value=today();
+ document.querySelector('input[name=roast][value=Medium]').checked=true;
+ $('bn-title').textContent='New bean';$('bn-save').textContent='Add bean';$('bn-cancel').hidden=true;
+}
+$('bn-cancel').onclick=resetBeanForm;
+$('bn-save').onclick=()=>{
+ const name=$('bn-name').value.trim();
+ if(!name){$('bn-name').focus();return}
+ const f={name,roast:radio('roast'),bought:$('bn-date').value||today()};
+ let id;
+ if(editing){const b=beanOf(editing);if(b){Object.assign(b,f,{u:Date.now()});id=b.id}}
+ else{id=uid('b');beans.push({id,...f,at:Date.now(),u:Date.now()})}
+ resetBeanForm();
+ if(id)setSel(id);
+ commit();
+};
+$('bean-list').onclick=e=>{
+ const t=e.target.closest('button');if(!t)return;
+ const id=t.dataset.id,a=t.dataset.a,b=beanOf(id);if(!b)return;
+ if(a==='log'){setSel(id);prefill();show('log');render()}
+ if(a==='edit'){
+  editing=id;$('bn-name').value=b.name;$('bn-date').value=b.bought;
+  document.querySelector(`input[name=roast][value="${b.roast}"]`).checked=true;
+  $('bn-title').textContent='Edit bean';$('bn-save').textContent='Save changes';$('bn-cancel').hidden=false;
+  scrollTo(0,0);$('bn-name').focus();
+ }
+ if(a==='del'){
+  if(armed!==id){armed=id;clearTimeout(armT);armT=setTimeout(()=>{armed=null;renderBeans()},3500);renderBeans();return}
+  armed=null;
+  const gone=shots.filter(x=>x.beanId===id).map(x=>x.id);
+  deleted.push(id,...gone);
+  beans=beans.filter(x=>x.id!==id);shots=shots.filter(x=>x.beanId!==id);
+  if(editing===id)resetBeanForm();
+  commit();
+ }
+};
+function renderBeans(){
+ if(!beans.length){$('bean-list').innerHTML='<div class="empty">No beans yet. Add your first one above.</div>';return}
+ $('bean-list').innerHTML=beans.map(b=>{
+  const n=shots.filter(x=>x.beanId===b.id).length,isA=armed===b.id;
+  return `<div class="brow"><div><div class="t">${esc(b.name)}</div><div class="m">${esc(b.roast)} roast &nbsp; bought ${esc(b.bought)} &nbsp; ${days(b.bought,today())} days ago &nbsp; ${n} ${n===1?'shot':'shots'}</div></div>
+  <div class="acts"><button data-a="log" data-id="${esc(b.id)}">Log shot</button><button class="q" data-a="edit" data-id="${esc(b.id)}">Edit</button><button class="${isA?'warn':'q'}" data-a="del" data-id="${esc(b.id)}">${isA?(n?'Delete bean and '+n+(n===1?' shot':' shots'):'Confirm delete'):'Delete'}</button></div></div>`;
+ }).join('');
+}
+
+/* log */
+const M={
+ time:{name:'Time',get:s=>s.time,band:[25,30],fmt:v=>v.toFixed(0)+'s'},
+ ratio:{name:'Ratio',get:s=>s.yield/s.dose,band:[1.8,2.5],fmt:v=>'1:'+v.toFixed(1)},
+ yield:{name:'Yield',get:s=>s.yield,band:null,fmt:v=>v.toFixed(1)+'g'},
+ clicks:{name:'Clicks',get:s=>s.clicks,band:null,fmt:v=>v}
+};
+const tasteCol={Sour:'var(--sour)',Balanced:'var(--bal)',Bitter:'var(--bit)'};
+let metric='time',filter='all';
+const sel=()=>{let s='';try{s=localStorage.getItem(SELK)||''}catch(e){}return beans.some(b=>b.id===s)?s:(beans[0]||{}).id||''};
+const setSel=id=>{try{localStorage.setItem(SELK,id)}catch(e){}};
+function prefill(){
+ const id=sel(),last=[...shots].reverse().find(x=>x.beanId===id)||{};
+ ['dose','yield','time','clicks'].forEach(k=>$(k).value=last[k]??'');
+ document.querySelectorAll('input[name=taste]').forEach(r=>r.checked=false);$('notes').value='';
+ live();
+}
+$('sel').onchange=e=>{setSel(e.target.value);prefill();renderSel()};
+function live(){
+ const d=val('dose'),y=val('yield'),t=val('time'),b=beanOf(sel());
+ $('ratio').innerHTML=(d&&y?'1:'+(y/d).toFixed(1):'1:–')+'<small>ratio</small>';
+ $('flow').innerHTML=(y&&t?(y/t).toFixed(1):'–')+'<small>g/s</small>';
+ $('age').innerHTML=(b&&b.bought?days(b.bought,today()):'–')+'<small>days since purchase</small>';
+}
+['dose','yield','time'].forEach(i=>$(i).addEventListener('input',live));
+function renderSel(){
+ const cur=sel();
+ $('sel').innerHTML=beans.map(b=>`<option value="${esc(b.id)}"${b.id===cur?' selected':''}>${esc(b.name)}</option>`).join('');
+ $('nobeans').hidden=beans.length>0;$('logform').hidden=!beans.length;
+ const b=beanOf(cur);
+ $('beaninfo').textContent=b?b.roast+' roast, purchased '+b.bought:'';
+ live();
+}
+$('save').onclick=()=>{
+ const beanId=sel(),dose=val('dose'),y=val('yield'),time=val('time');
+ if(!beanId)return;
+ if(!dose||!y||!time){(!dose?$('dose'):!y?$('yield'):$('time')).focus();return}
+ shots.push({id:uid('s'),at:Date.now(),beanId,dose,yield:y,time,clicks:val('clicks'),taste:radio('taste'),notes:$('notes').value.trim()});
+ ['yield','time','notes'].forEach(k=>$(k).value='');
+ document.querySelectorAll('input[name=taste]').forEach(r=>r.checked=false);
+ commit();
+};
+$('list').onclick=e=>{
+ const id=e.target.dataset.del;if(!id)return;
+ shots=shots.filter(s=>String(s.id)!==id);deleted.push(isNaN(id)?id:+id);commit();
+};
+
+/* trend */
+$('tabs').innerHTML=Object.keys(M).map(k=>`<button data-k="${k}" aria-pressed="${k===metric}">${M[k].name}</button>`).join('');
+$('tabs').onclick=e=>{const k=e.target.dataset.k;if(!k)return;metric=k;[...$('tabs').children].forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));chart()};
+$('filter').onchange=e=>{filter=e.target.value;chart();stats()};
+const view_=()=>shots.filter(s=>filter==='all'||s.beanId===filter).sort((a,b)=>a.at-b.at);
+function stats(){
+ const v=view_(),n=v.length;
+ if(!n){$('stats').innerHTML='';return}
+ const avg=f=>v.reduce((a,s)=>a+f(s),0)/n;
+ $('stats').innerHTML=`<div><b>${n}</b><span>shots</span></div><div><b>1:${avg(s=>s.yield/s.dose).toFixed(1)}</b><span>average ratio</span></div><div><b>${avg(s=>s.time).toFixed(0)}s</b><span>average time</span></div><div><b>${avg(s=>s.yield/s.time).toFixed(1)}</b><span>average g/s</span></div>`;
+}
+function chart(){
+ const v=view_(),m=M[metric];
+ if(!v.length){$('chart').innerHTML='<div class="empty">No shots yet. Log your first one above.</div>';return}
+ const W=640,H=230,pl=36,pr=10,pt=12,pb=26;
+ const ys=v.map(m.get);let lo=Math.min(...ys),hi=Math.max(...ys);
+ if(m.band){lo=Math.min(lo,m.band[0]);hi=Math.max(hi,m.band[1])}
+ if(lo===hi){lo-=1;hi+=1}
+ const pad=(hi-lo)*.12;lo-=pad;hi+=pad;
+ const X=i=>v.length===1?(pl+W-pr)/2:pl+i*(W-pl-pr)/(v.length-1);
+ const Y=y=>pt+(hi-y)/(hi-lo)*(H-pt-pb);
+ let g='';
+ for(let k=0;k<=3;k++){const y=lo+(hi-lo)*k/3,py=Y(y);g+=`<line x1="${pl}" x2="${W-pr}" y1="${py}" y2="${py}" stroke="var(--line)" stroke-width="1"/><text x="${pl-8}" y="${py+4}" text-anchor="end">${metric==='ratio'?y.toFixed(1):Math.round(y*10)/10}</text>`}
+ const band=m.band?`<rect x="${pl}" width="${W-pl-pr}" y="${Y(m.band[1])}" height="${Y(m.band[0])-Y(m.band[1])}" fill="var(--band)" rx="3"/>`:'';
+ const pts=v.map((s,i)=>X(i)+','+Y(m.get(s))).join(' ');
+ const dots=v.map((s,i)=>`<circle cx="${X(i)}" cy="${Y(m.get(s))}" r="5.5" fill="${tasteCol[s.taste]||'var(--bg)'}" stroke="var(--ink)" stroke-width="1.5"><title>${esc(bname(s.beanId))}, ${new Date(s.at).toLocaleDateString()}: ${m.fmt(m.get(s))}${s.taste?' ('+s.taste+')':''}</title></circle>`).join('');
+ const step=Math.ceil(v.length/6);
+ const xl=v.map((s,i)=>i%step===0?`<text x="${X(i)}" y="${H-6}" text-anchor="middle">${new Date(s.at).toLocaleDateString(undefined,{month:'short',day:'numeric'})}</text>`:'').join('');
+ $('chart').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${m.name} per shot">${band}${g}<polyline points="${pts}" fill="none" stroke="var(--ink)" stroke-width="1.5" stroke-linejoin="round"/>${dots}${xl}</svg>`;
+}
+function list(){
+ if(!shots.length){$('list').innerHTML='<div class="empty">Your shots will appear here.</div>';return}
+ $('list').innerHTML=[...shots].reverse().map(s=>{
+  const b=beanOf(s.beanId)||{};
+  return `<div class="row">
+  <div><div class="t">${esc(b.name||'Unknown bean')}</div><div class="m">${esc(b.roast||'')} roast &nbsp; ${new Date(s.at).toLocaleDateString(undefined,{month:'short',day:'numeric'})}, day ${days(b.bought,dstr(s.at))} since purchase</div></div>
+  <button class="q" data-del="${esc(s.id)}" aria-label="Delete shot">Delete</button>
+  <div class="d"><span>${s.dose}g in</span><span>${s.yield}g out</span><span>1:${(s.yield/s.dose).toFixed(1)}</span><span>${s.time}s</span><span>${s.clicks} clicks</span>${s.taste?`<span><i class="dot" style="background:${tasteCol[s.taste]}"></i>${s.taste}</span>`:''}</div>
+  ${s.notes?`<div class="note">${esc(s.notes)}</div>`:''}</div>`;
+ }).join('');
+}
+function render(){
+ if(filter!=='all'&&!beanOf(filter))filter='all';
+ $('filter').innerHTML='<option value="all">All beans</option>'+beans.map(b=>`<option value="${esc(b.id)}"${b.id===filter?' selected':''}>${esc(b.name)}</option>`).join('');
+ renderSel();renderBeans();stats();chart();list();
+}
+
+/* settings and backup */
+const SET=[['gh-repo','repo'],['gh-path','path'],['gh-token','token']];
+SET.forEach(([i,k])=>{$(i).value=cfg[k]||''});
+$('gh-save').onclick=()=>{
+ cfg={repo:$('gh-repo').value.trim(),path:$('gh-path').value.trim()||'espresso-log.json',token:$('gh-token').value.trim()};
+ try{localStorage.setItem(CK,JSON.stringify(cfg))}catch(e){}
+ if(!cfg.repo||!cfg.token)return setSync('Add the repo and token');
+ sync();
+};
+$('gh-off').onclick=()=>{cfg={};try{localStorage.removeItem(CK)}catch(e){}SET.forEach(([i])=>$(i).value='');setSync('Saved on this device only')};
+const dl=(name,text,type)=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+$('ex-json').onclick=()=>dl('espresso-log.json',JSON.stringify({beans,shots,deleted},null,1),'application/json');
+$('ex-csv').onclick=()=>{
+ const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+ const h=['date','bean','roast','purchased','dose_g','yield_g','ratio','time_s','clicks','taste','notes'];
+ const rows=shots.map(x=>{const b=beanOf(x.beanId)||{};return[dstr(x.at),b.name,b.roast,b.bought,x.dose,x.yield,(x.yield/x.dose).toFixed(2),x.time,x.clicks,x.taste,x.notes].map(q).join(',')});
+ dl('espresso-log.csv',[h.join(','),...rows].join('\n'),'text/csv');
+};
+$('im').onchange=e=>{
+ const f=e.target.files[0];if(!f)return;
+ f.text().then(t=>{
+  const d=JSON.parse(t),inc=Array.isArray(d)?{shots:d}:d;
+  setData(merge({beans,shots,deleted},inc));commit();setSync('Imported '+(inc.shots||[]).length+' shots');
+ }).catch(()=>setSync('That file is not a valid log'));
+ e.target.value='';
+};
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')sync()});
+addEventListener('online',sync);
+
+setSync(cfg.token&&cfg.repo?'':'Saved on this device only');
+render();prefill();
+if(!beans.length)show('beans');
+sync();
+</script>
+</body>
+</html>
