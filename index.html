@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Espresso Log</title>
+<title>Dialed</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%98%95%3C/text%3E%3C/svg%3E">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
@@ -186,12 +186,15 @@ button:active{transform:scale(.96)}
 .tech .k{font-size:12px;color:var(--mute)}
 .tech p{margin:4px 0 0;font-size:14px;line-height:1.55}
 @media(min-width:561px){.recipe .facts{grid-template-columns:repeat(3,1fr)}}
+body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
+main{width:100%;flex:1 0 auto}
+.foot{padding:8px 20px 28px;text-align:center;font-size:12px;color:var(--mute)}
 </style>
 </head>
 <body>
 <main>
-<header class="head"><div><h1><svg class="logo" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="steam" stroke="var(--btn)"><path d="M11 10c-1-1.5 1-2.5 0-4.5"/><path d="M16 10c-1-1.5 1-2.5 0-4.5"/><path d="M21 10c-1-1.5 1-2.5 0-4.5"/></g><path d="M6 14.5h17v5.5a6 6 0 0 1-6 6h-5a6 6 0 0 1-6-6z"/><path d="M23 16h1.8a3 3 0 0 1 0 6H23"/></svg>Espresso log</h1>
-<p class="sub">Dial in, write it down, see the trend. <span id="sync"></span></p></div>
+<header class="head"><div><h1><svg class="logo" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="steam" stroke="var(--btn)"><path d="M11 10c-1-1.5 1-2.5 0-4.5"/><path d="M16 10c-1-1.5 1-2.5 0-4.5"/><path d="M21 10c-1-1.5 1-2.5 0-4.5"/></g><path d="M6 14.5h17v5.5a6 6 0 0 1-6 6h-5a6 6 0 0 1-6-6z"/><path d="M23 16h1.8a3 3 0 0 1 0 6H23"/></svg>Dialed</h1>
+<p class="sub">Dial in, write it down, see the trend.</p></div>
 <button class="gear" id="gear" aria-label="Settings" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></header>
 <div class="tabs nav" id="nav">
 <button data-v="log" aria-pressed="true">Log</button>
@@ -307,6 +310,7 @@ button:active{transform:scale(.96)}
 </section>
 </div>
 </main>
+<footer class="foot"><span id="sync"></span></footer>
 <div id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -382,7 +386,7 @@ const shotCost=(b,s)=>b&&b.weight&&b.price?s.dose*b.price/b.weight:0;
 
 /* GitHub sync */
 let cfg={};try{cfg=JSON.parse(localStorage.getItem(CK))||{}}catch(e){}
-const setSync=t=>{const e=$('sync');e.textContent=t?'\u00a0'+t:'';if(!t)delete e.dataset.s;else e.dataset.s=/^(Syncing|Saving)/.test(t)?'busy':/^Synced/.test(t)?'ok':'off'};
+const setSync=t=>{const e=$('sync');e.textContent=t||'';if(!t)delete e.dataset.s;else e.dataset.s=/^(Syncing|Saving)/.test(t)?'busy':/^Synced/.test(t)?'ok':'off'};
 const b64=x=>btoa(unescape(encodeURIComponent(x)));
 const unb64=x=>decodeURIComponent(escape(atob(x.replace(/\s/g,''))));
 const api=()=>'https://api.github.com/repos/'+cfg.repo+'/contents/'+(cfg.path||'espresso-log.json');
