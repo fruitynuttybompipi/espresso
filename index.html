@@ -112,6 +112,10 @@ button.q,.tabs button{font-weight:400}
 .bean .acts .q{border:1px solid var(--line)}
 .bean .acts .warn{flex:1 1 100%}
 @media(min-width:561px){.facts{grid-template-columns:repeat(4,1fr)}.bean .acts button,.bean .acts .main{flex:none;padding:8px 18px}.bean .acts .warn{flex:none}.bean .acts{justify-content:flex-start}}
+.pills{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.pill.fin{color:var(--ink);border-color:var(--ink)}
+.bean.done{background:transparent;border:1px solid var(--line)}
+.bean.done>:not(.acts){opacity:.55}
 </style>
 </head>
 <body>
@@ -127,7 +131,7 @@ button.q,.tabs button{font-weight:400}
 <div id="v-log">
 <section>
 <div class="card" id="nobeans" hidden>
-<p style="margin:0 0 14px">Create a bean profile first, then pick it here each time you pull a shot.</p>
+<p style="margin:0 0 14px" id="nobeans-msg">Create a bean profile first, then pick it here each time you pull a shot.</p>
 <button id="go-beans">Add a bean</button>
 </div>
 <div class="card" id="logform">
@@ -184,6 +188,7 @@ button.q,.tabs button{font-weight:400}
 <div class="f span2"><label class="l" for="bn-roasted">Roast date (optional)</label><input type="date" id="bn-roasted"></div>
 <div class="f"><label class="l" for="bn-weight">Bag weight (g)</label><input type="number" id="bn-weight" step="1" inputmode="decimal" placeholder="250"></div>
 <div class="f"><label class="l" for="bn-price">Bag price</label><input type="number" id="bn-price" step="0.01" inputmode="decimal" placeholder="68"></div>
+<div class="f span2" id="bn-fin-wrap" hidden><label class="l" for="bn-finished">Finished on (clear to reopen)</label><input type="date" id="bn-finished"></div>
 <div class="f span4"><span class="l">Roast</span>
 <div class="seg"><label><input type="radio" name="roast" value="Light"><span>Light</span></label><label><input type="radio" name="roast" value="Medium" checked><span>Medium</span></label><label><input type="radio" name="roast" value="Dark"><span>Dark</span></label></div></div>
 <div class="f span4"><span class="l">Flavour tags (optional)</span>
@@ -335,7 +340,7 @@ $('go-beans').onclick=()=>{show('beans');$('bn-name').focus()};
 let editing=null,armed=null,armT=null;
 $('bn-date').value=today();
 function resetBeanForm(){
- editing=null;$('bn-name').value='';$('bn-weight').value='';$('bn-price').value='';$('bn-roasted').value='';document.querySelectorAll('input[name=tag]').forEach(c=>c.checked=false);$('bn-date').value=today();
+ editing=null;$('bn-name').value='';$('bn-weight').value='';$('bn-price').value='';$('bn-roasted').value='';document.querySelectorAll('input[name=tag]').forEach(c=>c.checked=false);$('bn-finished').value='';$('bn-fin-wrap').hidden=true;$('bn-date').value=today();
  document.querySelector('input[name=roast][value=Medium]').checked=true;
  $('bn-title').textContent='New bean';$('bn-save').textContent='Add bean';$('bn-cancel').hidden=true;
 }
@@ -343,7 +348,7 @@ $('bn-cancel').onclick=resetBeanForm;
 $('bn-save').onclick=()=>{
  const name=$('bn-name').value.trim();
  if(!name){$('bn-name').focus();return}
- const f={name,roast:radio('roast'),bought:$('bn-date').value||today(),weight:val('bn-weight'),price:val('bn-price'),roasted:$('bn-roasted').value,tags:[...document.querySelectorAll('input[name=tag]:checked')].map(c=>c.value)};
+ const f={name,roast:radio('roast'),bought:$('bn-date').value||today(),weight:val('bn-weight'),price:val('bn-price'),roasted:$('bn-roasted').value,finished:$('bn-finished').value,tags:[...document.querySelectorAll('input[name=tag]:checked')].map(c=>c.value)};
  let id;
  if(editing){const b=beanOf(editing);if(b){Object.assign(b,f,{u:Date.now()});id=b.id}}
  else{id=uid('b');beans.push({id,...f,at:Date.now(),u:Date.now()})}
@@ -355,8 +360,9 @@ $('bean-list').onclick=e=>{
  const t=e.target.closest('button');if(!t)return;
  const id=t.dataset.id,a=t.dataset.a,b=beanOf(id);if(!b)return;
  if(a==='log'){setSel(id);if(editShot)editShot=null;endEdit();show('log');render()}
+ if(a==='fin'){b.finished=today();b.u=Date.now();commit();return}
  if(a==='edit'){
-  editing=id;$('bn-name').value=b.name;$('bn-date').value=b.bought;$('bn-weight').value=b.weight||'';$('bn-price').value=b.price||'';$('bn-roasted').value=b.roasted||'';document.querySelectorAll('input[name=tag]').forEach(c=>c.checked=(b.tags||[]).includes(c.value));
+  editing=id;$('bn-name').value=b.name;$('bn-date').value=b.bought;$('bn-weight').value=b.weight||'';$('bn-price').value=b.price||'';$('bn-roasted').value=b.roasted||'';$('bn-fin-wrap').hidden=false;$('bn-finished').value=b.finished||'';document.querySelectorAll('input[name=tag]').forEach(c=>c.checked=(b.tags||[]).includes(c.value));
   document.querySelector(`input[name=roast][value="${b.roast}"]`).checked=true;
   $('bn-title').textContent='Edit bean';$('bn-save').textContent='Save changes';$('bn-cancel').hidden=false;
   scrollTo(0,0);$('bn-name').focus();
@@ -375,19 +381,24 @@ const fmtD=iso=>iso?new Date(iso+'T00:00:00').toLocaleDateString(undefined,{day:
 function renderBeans(){
  if(!beans.length){$('bean-list').innerHTML='<div class="empty">No beans yet. Add your first one above.</div>';return}
  const F=(k,v)=>`<div><span class="k">${k}</span><span class="v">${v}</span></div>`;
- $('bean-list').innerHTML=beans.map(b=>{
-  const n=shots.filter(x=>x.beanId===b.id).length,isA=armed===b.id,g=bagOf(b),id=esc(b.id);
-  const facts=(b.roasted?F('Roasted',esc(fmtD(b.roasted)))+F('Rested',days(b.roasted,today())+' days'):'')
-   +F('Bought',esc(fmtD(b.bought)))+(b.roasted?'':F('Age',days(b.bought,today())+' days'))
+ const card=b=>{
+  const fin=!!b.finished,end=b.finished||today(),n=shots.filter(x=>x.beanId===b.id).length,isA=armed===b.id,g=bagOf(b),id=esc(b.id);
+  const facts=(b.roasted?F('Roasted',esc(fmtD(b.roasted)))+F('Rested',days(b.roasted,end)+' days'):'')
+   +F('Bought',esc(fmtD(b.bought)))+(b.roasted?'':F('Age',days(b.bought,end)+' days'))
    +F('Shots',n)
-   +(g?F('Bag left',Math.round(g.left)+'g of '+b.weight+'g'+(g.st==='ok'?'':`<small class="low">${g.st==='empty'?'Bag empty':'Running low'}</small>`)):'')
+   +(fin?F('Finished',esc(fmtD(b.finished))):(g?F('Bag left',Math.round(g.left)+'g of '+b.weight+'g'+(g.st==='ok'?'':`<small class="low">${g.st==='empty'?'Bag empty':'Running low'}</small>`)):''))
    +(g&&b.price?F('Cost per shot','about '+money(b.price/b.weight*g.avg)):'');
-  const meter=g?`<div class="meter${g.st==='ok'?'':' low'}"><i style="width:${Math.min(100,Math.round(g.left/b.weight*100))}%"></i></div>`:'';
+  const meter=g&&!fin?`<div class="meter${g.st==='ok'?'':' low'}"><i style="width:${Math.min(100,Math.round(g.left/b.weight*100))}%"></i></div>`:'';
   const tags=b.tags&&b.tags.length?`<div class="chips">${b.tags.map(t=>`<span>${esc(cap(t))}</span>`).join('')}</div>`:'';
-  return `<div class="bean"><div class="top"><div class="t">${esc(b.name)}</div><span class="pill">${esc(b.roast)} roast</span></div>${tags}
+  const del=`<button class="${isA?'warn':'q'}" data-a="del" data-id="${id}">${isA?(n?'Delete bean and '+n+(n===1?' shot':' shots'):'Confirm delete'):'Delete'}</button>`;
+  const acts=fin?`<button class="q" data-a="edit" data-id="${id}">Edit</button>${del}`
+   :`<button class="main" data-a="log" data-id="${id}">Log shot</button><button class="q" data-a="fin" data-id="${id}">Finish</button><button class="q" data-a="edit" data-id="${id}">Edit</button>${del}`;
+  return `<div class="bean${fin?' done':''}"><div class="top"><div class="t">${esc(b.name)}</div><div class="pills"><span class="pill">${esc(b.roast)} roast</span>${fin?'<span class="pill fin">Finished</span>':''}</div></div>${tags}
   <div class="facts">${facts}</div>${meter}
-  <div class="acts"><button class="main" data-a="log" data-id="${id}">Log shot</button><button class="q" data-a="edit" data-id="${id}">Edit</button><button class="${isA?'warn':'q'}" data-a="del" data-id="${id}">${isA?(n?'Delete bean and '+n+(n===1?' shot':' shots'):'Confirm delete'):'Delete'}</button></div></div>`;
- }).join('');
+  <div class="acts">${acts}</div></div>`;
+ };
+ const act=beans.filter(b=>!b.finished),done=beans.filter(b=>b.finished);
+ $('bean-list').innerHTML=act.map(card).join('')+(done.length?`<div class="l" style="margin:26px 0 10px">Finished</div>`+done.map(card).join(''):'');
 }
 
 /* log */
@@ -400,7 +411,8 @@ const M={
 };
 const tasteCol={Sour:'var(--sour)',Balanced:'var(--bal)',Bitter:'var(--bit)'};
 let metric='time',filter='all',ft='all',fr=0;
-const sel=()=>{let s='';try{s=localStorage.getItem(SELK)||''}catch(e){}return beans.some(b=>b.id===s)?s:(beans[0]||{}).id||''};
+const selectable=()=>beans.filter(b=>!b.finished||(editShot&&(shots.find(x=>x.id===editShot)||{}).beanId===b.id));
+const sel=()=>{let s='';try{s=localStorage.getItem(SELK)||''}catch(e){}const a=selectable();return a.some(b=>b.id===s)?s:(a[0]||{}).id||''};
 const setSel=id=>{try{localStorage.setItem(SELK,id)}catch(e){}};
 function prefill(){
  const id=sel(),last=[...shots].reverse().find(x=>x.beanId===id)||{};
@@ -421,8 +433,10 @@ function live(){
 ['dose','yield','time'].forEach(i=>$(i).addEventListener('input',live));
 function renderSel(){
  const cur=sel();
- $('sel').innerHTML=beans.map(b=>`<option value="${esc(b.id)}"${b.id===cur?' selected':''}>${esc(b.name)}</option>`).join('');
- $('nobeans').hidden=beans.length>0;$('logform').hidden=!beans.length;
+ const av=selectable();
+ $('sel').innerHTML=av.map(b=>`<option value="${esc(b.id)}"${b.id===cur?' selected':''}>${esc(b.name)}</option>`).join('');
+ $('nobeans-msg').textContent=beans.length?'All your beans are finished. Add a new bean to log more shots.':'Create a bean profile first, then pick it here each time you pull a shot.';
+ $('nobeans').hidden=av.length>0;$('logform').hidden=!av.length;
  const b=beanOf(cur),g=bagOf(b);
  $('beaninfo').innerHTML=b?esc(b.roast)+' roast, '+(b.roasted?'roasted '+esc(b.roasted)+', ':'')+'purchased '+esc(b.bought)+(b.tags&&b.tags.length?'<br>'+esc(b.tags.map(cap).join(', ')):'')+(g?`<br><span class="${g.st==='ok'?'':'low'}">${esc(bagTxt(b))}</span>`:''):'';
  live();
