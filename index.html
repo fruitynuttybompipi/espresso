@@ -116,16 +116,63 @@ button.q,.tabs button{font-weight:400}
 .pill.fin{color:var(--ink);border-color:var(--ink)}
 .bean.done{background:transparent;border:1px solid var(--line)}
 .bean.done>:not(.acts){opacity:.55}
+.head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.gear{background:transparent;color:var(--mute);padding:0;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;margin-top:-2px;flex:none}
+.gear:hover{color:var(--ink)}
+.gear[aria-pressed=true]{color:var(--btn)}
+.gear svg{width:23px;height:23px}
+.grp{font-size:13px;color:var(--mute);margin:24px 0 10px}
+.grp:first-child{margin-top:12px}
+.grp span{margin-left:8px;color:var(--ink)}
+
+/* icons and motion */
+button{display:inline-flex;align-items:center;justify-content:center;gap:7px;transition:background-color .2s,color .2s,transform .12s,opacity .2s}
+button:active{transform:scale(.96)}
+.i{width:16px;height:16px;flex:none}
+.head h1{display:flex;align-items:center;gap:10px}
+.logo{width:36px;height:36px;flex:none;color:var(--ink)}
+.steam path{opacity:0;transform-box:fill-box;animation:steam 3.2s ease-in-out infinite}
+.steam path:nth-child(2){animation-delay:.55s}.steam path:nth-child(3){animation-delay:1.1s}
+@keyframes steam{0%{opacity:0;transform:translateY(5px)}35%{opacity:.9}100%{opacity:0;transform:translateY(-5px)}}
+.gear svg{transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.gear:hover svg,.gear[aria-pressed=true] svg{transform:rotate(60deg)}
+.seg span{transition:background-color .2s,color .2s,border-color .2s,transform .12s}
+.seg label:active span{transform:scale(.94)}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.view-in>section{animation:rise .45s cubic-bezier(.2,.7,.2,1) both}
+.view-in>section:nth-child(2){animation-delay:.06s}
+.view-in>section:nth-child(3){animation-delay:.12s}
+.view-in>section:nth-child(4){animation-delay:.18s}
+@keyframes grow{from{width:0}}
+.view-in .meter i{animation:grow .9s cubic-bezier(.2,.7,.2,1) both}
+@keyframes ring{0%{box-shadow:0 0 0 2px var(--btn)}100%{box-shadow:0 0 0 2px transparent}}
+.bean.flash{animation:ring 1.6s ease-out}
+@keyframes hl{0%{background:rgba(255,89,38,.18)}100%{background:transparent}}
+.row.flash{animation:hl 1.8s ease-out}
+.draw{stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1s ease-out forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.dotin{opacity:0;transform-box:fill-box;transform-origin:center;animation:popin .45s cubic-bezier(.2,.9,.3,1.3) forwards}
+@keyframes popin{from{opacity:0;transform:scale(.2)}to{opacity:1;transform:scale(1)}}
+#sync[data-s]::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:6px;vertical-align:middle;background:var(--mute)}
+#sync[data-s=ok]::before{background:var(--bal)}
+#sync[data-s=busy]::before{background:var(--btn);animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.25;transform:scale(.7)}}
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,16px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:99px;font-size:14px;font-weight:600;display:flex;gap:8px;align-items:center;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:9}
+#toast .i{color:var(--btn)}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+.empty::before{content:'';display:block;width:34px;height:34px;margin:0 auto 12px;background:var(--mute);opacity:.45;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z'/%3E%3Cpath d='M16 10h1.5a2.5 2.5 0 0 1 0 5H16'/%3E%3Cpath d='M8 3v2M12 3v2'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z'/%3E%3Cpath d='M16 10h1.5a2.5 2.5 0 0 1 0 5H16'/%3E%3Cpath d='M8 3v2M12 3v2'/%3E%3C/svg%3E") center/contain no-repeat}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;animation-delay:0s!important;transition-duration:.01ms!important}}
 </style>
 </head>
 <body>
 <main>
-<h1>Espresso log</h1>
-<p class="sub">Dial in, write it down, see the trend. <span id="sync"></span></p>
+<header class="head"><div><h1><svg class="logo" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="steam" stroke="var(--btn)"><path d="M11 10c-1-1.5 1-2.5 0-4.5"/><path d="M16 10c-1-1.5 1-2.5 0-4.5"/><path d="M21 10c-1-1.5 1-2.5 0-4.5"/></g><path d="M6 14.5h17v5.5a6 6 0 0 1-6 6h-5a6 6 0 0 1-6-6z"/><path d="M23 16h1.8a3 3 0 0 1 0 6H23"/></svg>Espresso log</h1>
+<p class="sub">Dial in, write it down, see the trend. <span id="sync"></span></p></div>
+<button class="gear" id="gear" aria-label="Settings" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></header>
 <div class="tabs nav" id="nav">
 <button data-v="log" aria-pressed="true">Log</button>
 <button data-v="beans" aria-pressed="false">Beans</button>
-<button data-v="settings" aria-pressed="false">Sync and backup</button>
+<button data-v="overview" aria-pressed="false">Overview</button>
 </div>
 
 <div id="v-log">
@@ -158,6 +205,9 @@ button.q,.tabs button{font-weight:400}
 </div>
 </section>
 
+</div>
+
+<div id="v-overview" hidden>
 <section>
 <h2>Review</h2>
 <div class="card" style="margin-bottom:26px"><div class="l" style="margin-bottom:12px">Last 7 days</div><div class="stats" id="week" style="margin:0"></div></div>
@@ -199,6 +249,7 @@ button.q,.tabs button{font-weight:400}
 </section>
 <section>
 <h2>Your beans</h2>
+<div class="tabs" id="bean-filter" style="margin-bottom:6px"></div>
 <div id="bean-list"></div>
 </section>
 </div>
@@ -226,6 +277,7 @@ button.q,.tabs button{font-weight:400}
 </section>
 </div>
 </main>
+<div id="toast" role="status" aria-live="polite"></div>
 
 <script>
 const KEY='espresso-log-v2',OLDKEY='espresso-log-v1',CK='espresso-gh-v1',SELK='espresso-sel';
@@ -239,6 +291,19 @@ const days=(a,b)=>a&&b?Math.max(0,Math.round((new Date(b)-new Date(a))/864e5)):0
 const dstr=t=>new Date(t).toISOString().slice(0,10);
 const radio=n=>(document.querySelector(`input[name=${n}]:checked`)||{}).value||'';
 const val=n=>{const v=parseFloat($(n).value);return isFinite(v)?v:0};
+const IC={
+ cup:'<path d="M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M16 10h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 3v2M12 3v2"/>',
+ bean:'<ellipse cx="12" cy="12" rx="5.2" ry="8.2" transform="rotate(40 12 12)"/><path d="M12 4.2c-2.2 2.6 2.2 5 0 7.8s2.2 5.2 0 7.8" transform="rotate(40 12 12)"/>',
+ chart:'<path d="M5 20V10M12 20V4M19 20v-7"/>',
+ plus:'<path d="M12 5v14M5 12h14"/>',
+ check:'<path d="M5 12.5l4.5 4.5L19 7"/>',
+ done:'<circle cx="12" cy="12" r="8.5"/><path d="M8.2 12.4l2.5 2.5 5-5.3"/>',
+ edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',
+ trash:'<path d="M5 7h14M10 7V4.5h4V7M7 7l.9 12.5h8.2L17 7M10.2 11v5.5M13.8 11v5.5"/>'
+};
+const icon=n=>`<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n]}</svg>`;
+const setBtn=(el,t,i)=>{el.innerHTML=icon(i)+esc(t)};
+const toast=m=>{const t=$('toast');t.innerHTML=icon('check')+esc(m);t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1900)};
 
 /* data: beans, shots, deleted (ids of removed beans and shots) */
 function norm(d){
@@ -265,6 +330,7 @@ function merge(a,b){
  return{beans:[...bm.values()].sort((x,y)=>(x.at||0)-(y.at||0)),shots:[...sm.values()].sort((x,y)=>x.at-y.at),deleted:[...del].sort(sk)};
 }
 let beans=[],shots=[],deleted=[];
+let flash=null,animChart=false,vt,tt;
 const setData=d=>{beans=d.beans;shots=d.shots;deleted=d.deleted};
 try{setData(merge(JSON.parse(localStorage.getItem(KEY)||localStorage.getItem(OLDKEY)),{}))}catch(e){}
 const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify({beans,shots,deleted}))}catch(e){}};
@@ -285,7 +351,7 @@ const shotCost=(b,s)=>b&&b.weight&&b.price?s.dose*b.price/b.weight:0;
 
 /* GitHub sync */
 let cfg={};try{cfg=JSON.parse(localStorage.getItem(CK))||{}}catch(e){}
-const setSync=t=>{$('sync').textContent=t?'\u00a0'+t:''};
+const setSync=t=>{const e=$('sync');e.textContent=t?'\u00a0'+t:'';if(!t)delete e.dataset.s;else e.dataset.s=/^(Syncing|Saving)/.test(t)?'busy':/^Synced/.test(t)?'ok':'off'};
 const b64=x=>btoa(unescape(encodeURIComponent(x)));
 const unb64=x=>decodeURIComponent(escape(atob(x.replace(/\s/g,''))));
 const api=()=>'https://api.github.com/repos/'+cfg.repo+'/contents/'+(cfg.path||'espresso-log.json');
@@ -326,45 +392,52 @@ function queueSync(){if(!cfg.token||!cfg.repo)return;setSync('Saving');clearTime
 const commit=()=>{persist();queueSync();render()};
 
 /* navigation */
-let view='log';
+let view='log',last='log';
 function show(v){
+ if(v!=='settings')last=v;
  view=v;
- ['log','beans','settings'].forEach(k=>$('v-'+k).hidden=k!==v);
+ ['log','beans','overview','settings'].forEach(k=>$('v-'+k).hidden=k!==v);
  [...$('nav').children].forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===v));
+ $('gear').setAttribute('aria-pressed',v==='settings');
  scrollTo(0,0);
+ const el=$('v-'+v);el.classList.remove('view-in');void el.offsetWidth;el.classList.add('view-in');clearTimeout(vt);vt=setTimeout(()=>el.classList.remove('view-in'),1100);
+ if(v==='overview'){animChart=true;chart()}
 }
-$('nav').onclick=e=>{const v=e.target.dataset.v;if(v)show(v)};
+$('gear').onclick=()=>show(view==='settings'?last:'settings');
+$('nav').onclick=e=>{const b=e.target.closest('button');if(b&&b.dataset.v)show(b.dataset.v)};
+[...$('nav').children].forEach(b=>{b.innerHTML=icon({log:'cup',beans:'bean',overview:'chart'}[b.dataset.v])+b.textContent});
 $('go-beans').onclick=()=>{show('beans');$('bn-name').focus()};
 
 /* beans */
-let editing=null,armed=null,armT=null;
+let editing=null,armed=null,armT=null,bf='all';
 $('bn-date').value=today();
 function resetBeanForm(){
  editing=null;$('bn-name').value='';$('bn-weight').value='';$('bn-price').value='';$('bn-roasted').value='';document.querySelectorAll('input[name=tag]').forEach(c=>c.checked=false);$('bn-finished').value='';$('bn-fin-wrap').hidden=true;$('bn-date').value=today();
  document.querySelector('input[name=roast][value=Medium]').checked=true;
- $('bn-title').textContent='New bean';$('bn-save').textContent='Add bean';$('bn-cancel').hidden=true;
+ $('bn-title').textContent='New bean';setBtn($('bn-save'),'Add bean','plus');$('bn-cancel').hidden=true;
 }
 $('bn-cancel').onclick=resetBeanForm;
+$('bean-filter').onclick=e=>{const k=e.target.dataset.bf;if(k){bf=k;renderBeans()}};
 $('bn-save').onclick=()=>{
  const name=$('bn-name').value.trim();
  if(!name){$('bn-name').focus();return}
  const f={name,roast:radio('roast'),bought:$('bn-date').value||today(),weight:val('bn-weight'),price:val('bn-price'),roasted:$('bn-roasted').value,finished:$('bn-finished').value,tags:[...document.querySelectorAll('input[name=tag]:checked')].map(c=>c.value)};
- let id;
+ let id;const was=!!editing;
  if(editing){const b=beanOf(editing);if(b){Object.assign(b,f,{u:Date.now()});id=b.id}}
  else{id=uid('b');beans.push({id,...f,at:Date.now(),u:Date.now()})}
  resetBeanForm();
- if(id)setSel(id);
- commit();
+ if(id){setSel(id);flash=id}
+ commit();toast(was?'Bean updated':'Bean added');
 };
 $('bean-list').onclick=e=>{
  const t=e.target.closest('button');if(!t)return;
  const id=t.dataset.id,a=t.dataset.a,b=beanOf(id);if(!b)return;
- if(a==='log'){setSel(id);if(editShot)editShot=null;endEdit();show('log');render()}
- if(a==='fin'){b.finished=today();b.u=Date.now();commit();return}
+ if(a==='log'){setSel(id);editShot=null;editFrom=null;endEdit();show('log');render()}
+ if(a==='fin'){b.finished=today();b.u=Date.now();flash=b.id;commit();toast('Bean finished');return}
  if(a==='edit'){
   editing=id;$('bn-name').value=b.name;$('bn-date').value=b.bought;$('bn-weight').value=b.weight||'';$('bn-price').value=b.price||'';$('bn-roasted').value=b.roasted||'';$('bn-fin-wrap').hidden=false;$('bn-finished').value=b.finished||'';document.querySelectorAll('input[name=tag]').forEach(c=>c.checked=(b.tags||[]).includes(c.value));
   document.querySelector(`input[name=roast][value="${b.roast}"]`).checked=true;
-  $('bn-title').textContent='Edit bean';$('bn-save').textContent='Save changes';$('bn-cancel').hidden=false;
+  $('bn-title').textContent='Edit bean';setBtn($('bn-save'),'Save changes','check');$('bn-cancel').hidden=false;
   scrollTo(0,0);$('bn-name').focus();
  }
  if(a==='del'){
@@ -374,11 +447,12 @@ $('bean-list').onclick=e=>{
   deleted.push(id,...gone);
   beans=beans.filter(x=>x.id!==id);shots=shots.filter(x=>x.beanId!==id);
   if(editing===id)resetBeanForm();
-  commit();
+  commit();toast('Bean deleted');
  }
 };
 const fmtD=iso=>iso?new Date(iso+'T00:00:00').toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}):'';
 function renderBeans(){
+ $('bean-filter').hidden=!beans.length;
  if(!beans.length){$('bean-list').innerHTML='<div class="empty">No beans yet. Add your first one above.</div>';return}
  const F=(k,v)=>`<div><span class="k">${k}</span><span class="v">${v}</span></div>`;
  const card=b=>{
@@ -390,15 +464,18 @@ function renderBeans(){
    +(g&&b.price?F('Cost per shot','about '+money(b.price/b.weight*g.avg)):'');
   const meter=g&&!fin?`<div class="meter${g.st==='ok'?'':' low'}"><i style="width:${Math.min(100,Math.round(g.left/b.weight*100))}%"></i></div>`:'';
   const tags=b.tags&&b.tags.length?`<div class="chips">${b.tags.map(t=>`<span>${esc(cap(t))}</span>`).join('')}</div>`:'';
-  const del=`<button class="${isA?'warn':'q'}" data-a="del" data-id="${id}">${isA?(n?'Delete bean and '+n+(n===1?' shot':' shots'):'Confirm delete'):'Delete'}</button>`;
-  const acts=fin?`<button class="q" data-a="edit" data-id="${id}">Edit</button>${del}`
-   :`<button class="main" data-a="log" data-id="${id}">Log shot</button><button class="q" data-a="fin" data-id="${id}">Finish</button><button class="q" data-a="edit" data-id="${id}">Edit</button>${del}`;
-  return `<div class="bean${fin?' done':''}"><div class="top"><div class="t">${esc(b.name)}</div><div class="pills"><span class="pill">${esc(b.roast)} roast</span>${fin?'<span class="pill fin">Finished</span>':''}</div></div>${tags}
+  const del=`<button class="${isA?'warn':'q'}" data-a="del" data-id="${id}">${icon('trash')}${isA?(n?'Delete bean and '+n+(n===1?' shot':' shots'):'Confirm delete'):'Delete'}</button>`;
+  const acts=fin?`<button class="q" data-a="edit" data-id="${id}">${icon('edit')}Edit</button>${del}`
+   :`<button class="main" data-a="log" data-id="${id}">${icon('plus')}Log shot</button><button class="q" data-a="fin" data-id="${id}">${icon('done')}Finish</button><button class="q" data-a="edit" data-id="${id}">${icon('edit')}Edit</button>${del}`;
+  return `<div class="bean${fin?' done':''}${b.id===flash?' flash':''}"><div class="top"><div class="t">${esc(b.name)}</div><div class="pills"><span class="pill">${esc(b.roast)} roast</span>${fin?'<span class="pill fin">Finished</span>':''}</div></div>${tags}
   <div class="facts">${facts}</div>${meter}
   <div class="acts">${acts}</div></div>`;
  };
- const act=beans.filter(b=>!b.finished),done=beans.filter(b=>b.finished);
- $('bean-list').innerHTML=act.map(card).join('')+(done.length?`<div class="l" style="margin:26px 0 10px">Finished</div>`+done.map(card).join(''):'');
+ const act=beans.filter(b=>!b.finished).sort((a,b)=>(b.bought||'').localeCompare(a.bought||'')||(b.at||0)-(a.at||0));
+ const done=beans.filter(b=>b.finished).sort((a,b)=>b.finished.localeCompare(a.finished)||(b.bought||'').localeCompare(a.bought||''));
+ $('bean-filter').innerHTML=[['all','All',beans.length],['new','New beans',act.length],['done','Finished',done.length]].map(([k,t,n])=>`<button data-bf="${k}" aria-pressed="${bf===k}">${t} ${n}</button>`).join('');
+ const grp=(t,list,empty)=>`<div class="grp">${t}<span>${list.length}</span></div>`+(list.length?list.map(card).join(''):`<div class="empty" style="padding:18px 0">${empty}</div>`);
+ $('bean-list').innerHTML=(bf!=='done'?grp('New beans',act,'No new beans. Add one above.'):'')+(bf==='done'||(bf==='all'&&done.length)?grp('Finished',done,'No finished beans yet.'):'');
 }
 
 /* log */
@@ -441,34 +518,35 @@ function renderSel(){
  $('beaninfo').innerHTML=b?esc(b.roast)+' roast, '+(b.roasted?'roasted '+esc(b.roasted)+', ':'')+'purchased '+esc(b.bought)+(b.tags&&b.tags.length?'<br>'+esc(b.tags.map(cap).join(', ')):'')+(g?`<br><span class="${g.st==='ok'?'':'low'}">${esc(bagTxt(b))}</span>`:''):'';
  live();
 }
-let editShot=null;
+let editShot=null,editFrom=null;
 $('save').onclick=()=>{
  const beanId=sel(),dose=val('dose'),y=val('yield'),time=val('time');
  if(!beanId)return;
  if(!dose||!y||!time){(!dose?$('dose'):!y?$('yield'):$('time')).focus();return}
  const f={beanId,dose,yield:y,time,clicks:val('clicks'),taste:radio('taste'),rating:+radio('rating')||0,notes:$('notes').value.trim()};
  const ex=editShot&&shots.find(x=>x.id===editShot);
- if(ex){Object.assign(ex,f,{u:Date.now()});endEdit()}
+ if(ex){Object.assign(ex,f,{u:Date.now()});flash=ex.id;endEdit()}
  else{
   shots.push({id:uid('s'),at:Date.now(),...f});
   ['yield','time','notes'].forEach(k=>$(k).value='');
   document.querySelectorAll('input[name=taste],input[name=rating]').forEach(r=>r.checked=false);
  }
- commit();
+ commit();toast(ex?'Shot updated':'Shot logged');
 };
 function startEdit(id){
  const s=shots.find(x=>String(x.id)===id);if(!s)return;
- editShot=s.id;setSel(s.beanId);renderSel();
+ editFrom=view;editShot=s.id;setSel(s.beanId);renderSel();
  ['dose','yield','time','clicks'].forEach(k=>$(k).value=s[k]??'');
  $('notes').value=s.notes||'';
  document.querySelectorAll('input[name=taste]').forEach(r=>r.checked=r.value===s.taste);
  document.querySelectorAll('input[name=rating]').forEach(r=>r.checked=r.value===String(s.rating));
- $('save').textContent='Save changes';$('cancel-shot').hidden=false;
+ setBtn($('save'),'Save changes','check');$('cancel-shot').hidden=false;
  $('editnote').hidden=false;$('editnote').textContent='Editing the shot from '+new Date(s.at).toLocaleDateString(undefined,{month:'short',day:'numeric'})+'. Saving replaces the original.';
  show('log');live();
 }
 function endEdit(){
- editShot=null;$('save').textContent='Log shot';$('cancel-shot').hidden=true;$('editnote').hidden=true;prefill();
+ const back=editFrom;editShot=null;editFrom=null;setBtn($('save'),'Log shot','plus');$('cancel-shot').hidden=true;$('editnote').hidden=true;prefill();
+ if(back&&back!=='log')show(back);
 }
 $('cancel-shot').onclick=endEdit;
 $('list').onclick=e=>{
@@ -476,13 +554,13 @@ $('list').onclick=e=>{
  if(t.dataset.edit)return startEdit(t.dataset.edit);
  const id=t.dataset.del;if(!id)return;
  if(String(editShot)===id)endEdit();
- shots=shots.filter(s=>String(s.id)!==id);deleted.push(isNaN(id)?id:+id);commit();
+ shots=shots.filter(s=>String(s.id)!==id);deleted.push(isNaN(id)?id:+id);commit();toast('Shot deleted');
 };
 
 /* trend */
 $('tabs').innerHTML=Object.keys(M).map(k=>`<button data-k="${k}" aria-pressed="${k===metric}">${M[k].name}</button>`).join('');
-$('tabs').onclick=e=>{const k=e.target.dataset.k;if(!k)return;metric=k;[...$('tabs').children].forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));chart()};
-const onF=()=>{stats();chart();list()};
+$('tabs').onclick=e=>{const k=e.target.dataset.k;if(!k)return;metric=k;[...$('tabs').children].forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));animChart=true;chart()};
+const onF=()=>{animChart=true;stats();chart();list()};
 $('filter').onchange=e=>{filter=e.target.value;onF()};
 $('f-taste').onchange=e=>{ft=e.target.value;onF()};
 $('f-rating').onchange=e=>{fr=+e.target.value;onF()};
@@ -493,7 +571,7 @@ function stats(){
  const avg=f=>v.reduce((a,s)=>a+f(s),0)/n;
  $('stats').innerHTML=`<div><b>${n}</b><span>shots</span></div><div><b>1:${avg(s=>s.yield/s.dose).toFixed(1)}</b><span>average ratio</span></div><div><b>${avg(s=>s.time).toFixed(0)}s</b><span>average time</span></div><div><b>${avg(s=>s.yield/s.time).toFixed(1)}</b><span>average g/s</span></div>`;
 }
-function scatter(v){
+function scatter(v,an){
  v=v.filter(s=>s.clicks>0);
  if(!v.length){$('chart').innerHTML='<div class="empty">Log shots with grinder clicks to see your sweet spot.</div>';return}
  const W=640,H=250,pl=40,pr=14,pt=12,pb=28;
@@ -507,14 +585,14 @@ function scatter(v){
  for(let k=0;k<=3;k++){const y=yl+(yh-yl)*k/3,py=Y(y);g+=`<line x1="${pl}" x2="${W-pr}" y1="${py}" y2="${py}" stroke="var(--line)"/><text x="${pl-8}" y="${py+4}" text-anchor="end">${Math.round(y)}</text>`}
  for(let k=0;k<=4;k++){const x=xl+(xh-xl)*k/4;g+=`<text x="${X(x)}" y="${H-8}" text-anchor="middle">${Math.round(x*2)/2}</text>`}
  const band=`<rect x="${pl}" width="${W-pl-pr}" y="${Y(30)}" height="${Y(25)-Y(30)}" fill="var(--band)" rx="3"/>`;
- const dots=v.map(s=>`<circle cx="${X(s.clicks)}" cy="${Y(s.time)}" r="6.5" fill="${tasteCol[s.taste]||'var(--bg)'}" fill-opacity=".9" stroke="var(--ink)" stroke-width="1.5"><title>${esc(bname(s.beanId))}: ${s.clicks} clicks, ${s.time}s${s.taste?' ('+s.taste+')':''}${s.rating?', '+s.rating+'/5':''}</title></circle>`).join('');
+ const dots=v.map((s,i)=>`<circle class="${an?'dotin':''}" style="animation-delay:${Math.min(i*.04,.8)}s" cx="${X(s.clicks)}" cy="${Y(s.time)}" r="6.5" fill="${tasteCol[s.taste]||'var(--bg)'}" fill-opacity=".9" stroke="var(--ink)" stroke-width="1.5"><title>${esc(bname(s.beanId))}: ${s.clicks} clicks, ${s.time}s${s.taste?' ('+s.taste+')':''}${s.rating?', '+s.rating+'/5':''}</title></circle>`).join('');
  $('chart').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Grinder clicks against shot time">${band}${g}${dots}</svg>`;
 }
 function chart(){
- const v=view_(),m=M[metric];
+ const v=view_(),m=M[metric],an=animChart;animChart=false;
  $('charthint').textContent=metric==='spot'?(filter==='all'?'Pick one bean in the filter to see its own sweet spot, since grinder settings differ per bean. Each dot is a shot, clicks across and seconds up.':'Each dot is a shot, clicks across and seconds up. The shaded band marks 25 to 30 seconds.'):'';
- if(!v.length){$('chart').innerHTML=`<div class="empty">${shots.length?'No shots match these filters.':'No shots yet. Log your first one above.'}</div>`;return}
- if(metric==='spot')return scatter(v);
+ if(!v.length){$('chart').innerHTML=`<div class="empty">${shots.length?'No shots match these filters.':'No shots yet. Log your first one on the Log tab.'}</div>`;return}
+ if(metric==='spot')return scatter(v,an);
  const W=640,H=230,pl=36,pr=10,pt=12,pb=26;
  const ys=v.map(m.get);let lo=Math.min(...ys),hi=Math.max(...ys);
  if(m.band){lo=Math.min(lo,m.band[0]);hi=Math.max(hi,m.band[1])}
@@ -526,19 +604,19 @@ function chart(){
  for(let k=0;k<=3;k++){const y=lo+(hi-lo)*k/3,py=Y(y);g+=`<line x1="${pl}" x2="${W-pr}" y1="${py}" y2="${py}" stroke="var(--line)" stroke-width="1"/><text x="${pl-8}" y="${py+4}" text-anchor="end">${metric==='ratio'?y.toFixed(1):Math.round(y*10)/10}</text>`}
  const band=m.band?`<rect x="${pl}" width="${W-pl-pr}" y="${Y(m.band[1])}" height="${Y(m.band[0])-Y(m.band[1])}" fill="var(--band)" rx="3"/>`:'';
  const pts=v.map((s,i)=>X(i)+','+Y(m.get(s))).join(' ');
- const dots=v.map((s,i)=>`<circle cx="${X(i)}" cy="${Y(m.get(s))}" r="5.5" fill="${tasteCol[s.taste]||'var(--bg)'}" stroke="var(--ink)" stroke-width="1.5"><title>${esc(bname(s.beanId))}, ${new Date(s.at).toLocaleDateString()}: ${m.fmt(m.get(s))}${s.taste?' ('+s.taste+')':''}</title></circle>`).join('');
+ const dots=v.map((s,i)=>`<circle class="${an?'dotin':''}" style="animation-delay:${Math.min(i*.03+.35,1)}s" cx="${X(i)}" cy="${Y(m.get(s))}" r="5.5" fill="${tasteCol[s.taste]||'var(--bg)'}" stroke="var(--ink)" stroke-width="1.5"><title>${esc(bname(s.beanId))}, ${new Date(s.at).toLocaleDateString()}: ${m.fmt(m.get(s))}${s.taste?' ('+s.taste+')':''}</title></circle>`).join('');
  const step=Math.ceil(v.length/6);
  const xl=v.map((s,i)=>i%step===0?`<text x="${X(i)}" y="${H-6}" text-anchor="middle">${new Date(s.at).toLocaleDateString(undefined,{month:'short',day:'numeric'})}</text>`:'').join('');
- $('chart').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${m.name} per shot">${band}${g}<polyline points="${pts}" fill="none" stroke="var(--ink)" stroke-width="1.5" stroke-linejoin="round"/>${dots}${xl}</svg>`;
+ $('chart').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${m.name} per shot">${band}${g}<polyline ${an?'class="draw" pathLength="1"':''} points="${pts}" fill="none" stroke="var(--ink)" stroke-width="1.5" stroke-linejoin="round"/>${dots}${xl}</svg>`;
 }
 function list(){
  const v=view_().reverse();
  if(!v.length){$('list').innerHTML=`<div class="empty">${shots.length?'No shots match these filters.':'Your shots will appear here.'}</div>`;return}
  $('list').innerHTML=v.map(s=>{
   const b=beanOf(s.beanId)||{},c=shotCost(b,s),rs=restOf(b,dstr(s.at));
-  return `<div class="row">
+  return `<div class="row${s.id===flash?' flash':''}">
   <div><div class="t">${esc(b.name||'Unknown bean')}</div><div class="m">${esc(b.roast||'')} roast &nbsp; ${new Date(s.at).toLocaleDateString(undefined,{month:'short',day:'numeric'})}, day ${rs.n??'–'} since ${rs.w}</div></div>
-  <div class="acts"><button class="q" data-edit="${esc(s.id)}">Edit</button><button class="q" data-del="${esc(s.id)}" aria-label="Delete shot">Delete</button></div>
+  <div class="acts"><button class="q" data-edit="${esc(s.id)}">${icon('edit')}Edit</button><button class="q" data-del="${esc(s.id)}" aria-label="Delete shot">${icon('trash')}Delete</button></div>
   <div class="d"><span>${s.dose}g in</span><span>${s.yield}g out</span><span>1:${(s.yield/s.dose).toFixed(1)}</span><span>${s.time}s</span><span>${s.clicks} clicks</span>${s.taste?`<span><i class="dot" style="background:${tasteCol[s.taste]}"></i>${s.taste}</span>`:''}${s.rating?`<span>${s.rating}/5</span>`:''}${c?`<span>${money(c)}</span>`:''}</div>
   ${s.notes?`<div class="note">${esc(s.notes)}</div>`:''}</div>`;
  }).join('');
@@ -554,7 +632,7 @@ function week(){
 function render(){
  if(filter!=='all'&&!beanOf(filter))filter='all';
  $('filter').innerHTML='<option value="all">All beans</option>'+beans.map(b=>`<option value="${esc(b.id)}"${b.id===filter?' selected':''}>${esc(b.name)}</option>`).join('');
- renderSel();renderBeans();week();stats();chart();list();
+ renderSel();renderBeans();week();stats();chart();list();flash=null;
 }
 
 /* settings and backup */
@@ -589,8 +667,9 @@ addEventListener('online',sync);
 $('pref-cur').value=curr;
 $('pref-cur').oninput=e=>{curr=e.target.value;try{localStorage.setItem('espresso-cur',curr)}catch(x){}render()};
 setSync(cfg.token&&cfg.repo?'':'Saved on this device only');
+setBtn($('save'),'Log shot','plus');setBtn($('bn-save'),'Add bean','plus');
 render();prefill();
-if(!beans.length)show('beans');
+show(beans.length?'log':'beans');
 sync();
 </script>
 </body>
