@@ -189,6 +189,28 @@ button:active{transform:scale(.96)}
 body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
 main{width:100%;flex:1 0 auto}
 .foot{padding:8px 20px 28px;text-align:center;font-size:12px;color:var(--mute)}
+
+:root{--dil:#5f86ad}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--dil:#86abd0}}
+:root[data-theme="dark"]{--dil:#86abd0}
+.latest .top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.latest .t{font:400 22px/1.25 Georgia,serif;overflow-wrap:anywhere}
+.latest .m{color:var(--mute);font-size:13px;margin-top:2px}
+.lchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.lchips span{font-size:12px;padding:3px 10px;border-radius:99px;background:var(--bg)}
+.gauges{display:grid;gap:22px;margin-top:22px}
+.gl{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;color:var(--mute);margin-bottom:10px}
+.gl b{font:400 26px/1 Georgia,serif;color:var(--ink);font-variant-numeric:tabular-nums}
+.track{position:relative;height:8px;border-radius:99px;background:var(--line)}
+.track .band{position:absolute;top:0;bottom:0;border-radius:99px;background:var(--bal);opacity:.4}
+.track .mk{position:absolute;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:var(--btn);box-shadow:0 0 0 3px var(--card)}
+.scale{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:var(--mute);margin-top:9px}
+.scale .ok{color:var(--bal);font-weight:600}
+.latest .facts{margin-top:22px}
+.vs{margin-top:20px;padding-top:16px;border-top:1px solid var(--line);font-size:13px;color:var(--mute);display:flex;flex-wrap:wrap;gap:6px 16px;align-items:baseline}
+.vs b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+@keyframes slide{from{left:0}}
+.view-in .track .mk{animation:slide .9s cubic-bezier(.2,.8,.2,1) both}
 </style>
 </head>
 <body>
@@ -217,8 +239,10 @@ main{width:100%;flex:1 0 auto}
 <div class="f"><label class="l" for="yield">Yield out (g)</label><input type="number" id="yield" step="0.1" inputmode="decimal" placeholder="36"></div>
 <div class="f"><label class="l" for="time">Time (s)</label><input type="number" id="time" step="0.5" inputmode="decimal" placeholder="28"></div>
 <div class="f"><label class="l" for="clicks">Grinder clicks</label><input type="number" id="clicks" step="0.5" inputmode="decimal" placeholder="14"></div>
+<div class="f span4"><span class="l">Drink</span>
+<div class="seg"><label><input type="radio" name="drink" value="Black" checked><span>Black</span></label><label><input type="radio" name="drink" value="White"><span>White</span></label></div></div>
 <div class="f span4"><span class="l">Taste</span>
-<div class="seg"><label><input type="radio" name="taste" value="Sour"><span>Sour</span></label><label><input type="radio" name="taste" value="Balanced"><span>Balanced</span></label><label><input type="radio" name="taste" value="Bitter"><span>Bitter</span></label></div></div>
+<div class="seg"><label><input type="radio" name="taste" value="Sour"><span>Sour</span></label><label><input type="radio" name="taste" value="Balanced"><span>Balanced</span></label><label><input type="radio" name="taste" value="Bitter"><span>Bitter</span></label><label><input type="radio" name="taste" value="Diluted"><span>Diluted</span></label></div></div>
 <div class="f span4"><span class="l">Rating (optional)</span>
 <div class="seg"><label><input type="radio" name="rating" value="1"><span>1</span></label><label><input type="radio" name="rating" value="2"><span>2</span></label><label><input type="radio" name="rating" value="3"><span>3</span></label><label><input type="radio" name="rating" value="4"><span>4</span></label><label><input type="radio" name="rating" value="5"><span>5</span></label></div></div>
 <div class="f span4"><label class="l" for="notes">Notes</label><input type="text" id="notes" placeholder="Blueberry, a little thin. Try finer."></div>
@@ -241,18 +265,23 @@ main{width:100%;flex:1 0 auto}
 </div>
 
 <div id="v-overview" hidden>
+<section id="latest-sec" hidden>
+<h2>Latest shot</h2>
+<div class="card latest" id="latest"></div>
+</section>
+
 <section>
 <h2>Review</h2>
 <div class="card" style="margin-bottom:26px"><div class="l" style="margin-bottom:12px">Last 7 days</div><div class="stats" id="week" style="margin:0"></div></div>
 <div class="tabs" id="tabs" style="margin-bottom:12px"></div>
 <div class="filters">
 <select id="filter" aria-label="Bean"></select>
-<select id="f-taste" aria-label="Taste"><option value="all">Any taste</option><option>Sour</option><option>Balanced</option><option>Bitter</option></select>
+<select id="f-taste" aria-label="Taste"><option value="all">Any taste</option><option>Sour</option><option>Balanced</option><option>Bitter</option><option>Diluted</option></select>
 <select id="f-rating" aria-label="Rating"><option value="0">Any rating</option><option value="3">3 and up</option><option value="4">4 and up</option><option value="5">5 only</option></select>
 </div>
 <div class="stats" id="stats"></div>
 <div class="card"><div id="chart"></div><div class="info" id="charthint" style="margin-top:10px"></div>
-<div class="legend"><span><i style="background:var(--sour)"></i>Sour</span><span><i style="background:var(--bal)"></i>Balanced</span><span><i style="background:var(--bit)"></i>Bitter</span><span><i style="background:var(--band);width:18px;border-radius:3px"></i>Target range</span></div></div>
+<div class="legend"><span><i style="background:var(--sour)"></i>Sour</span><span><i style="background:var(--bal)"></i>Balanced</span><span><i style="background:var(--bit)"></i>Bitter</span><span><i style="background:var(--dil)"></i>Diluted</span><span><i style="background:var(--band);width:18px;border-radius:3px"></i>Target range</span></div></div>
 </section>
 
 <section>
@@ -322,7 +351,8 @@ const hash=s=>{let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))|0;return 'b'+Ma
 const sk=(x,y)=>String(x)<String(y)?-1:1;
 const today=()=>{const d=new Date();return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
 const days=(a,b)=>a&&b?Math.max(0,Math.round((new Date(b)-new Date(a))/864e5)):0;
-const dstr=t=>new Date(t).toISOString().slice(0,10);
+const dstr=t=>{const d=new Date(t);return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
+const tm=t=>new Date(t).toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});
 const radio=n=>(document.querySelector(`input[name=${n}]:checked`)||{}).value||'';
 const val=n=>{const v=parseFloat($(n).value);return isFinite(v)?v:0};
 const IC={
@@ -521,7 +551,7 @@ const M={
  clicks:{name:'Clicks',get:s=>s.clicks,band:null,fmt:v=>v},
  spot:{name:'Sweet spot'}
 };
-const tasteCol={Sour:'var(--sour)',Balanced:'var(--bal)',Bitter:'var(--bit)'};
+const tasteCol={Sour:'var(--sour)',Balanced:'var(--bal)',Bitter:'var(--bit)',Diluted:'var(--dil)'};
 let metric='time',filter='all',ft='all',fr=0;
 const selectable=()=>beans.filter(b=>!b.finished||(editShot&&(shots.find(x=>x.id===editShot)||{}).beanId===b.id));
 const sel=()=>{let s='';try{s=localStorage.getItem(SELK)||''}catch(e){}const a=selectable();return a.some(b=>b.id===s)?s:(a[0]||{}).id||''};
@@ -530,6 +560,7 @@ function prefill(){
  const id=sel(),last=[...shots].reverse().find(x=>x.beanId===id)||{};
  ['dose','yield','time','clicks'].forEach(k=>$(k).value=last[k]??'');
  document.querySelectorAll('input[name=taste],input[name=rating]').forEach(r=>r.checked=false);$('notes').value='';
+ document.querySelectorAll('input[name=drink]').forEach(r=>r.checked=r.value===(last.drink||'Black'));
  live();
 }
 $('sel').onchange=e=>{setSel(e.target.value);if(!editShot)prefill();renderSel()};
@@ -558,15 +589,16 @@ $('save').onclick=()=>{
  const beanId=sel(),dose=val('dose'),y=val('yield'),time=val('time');
  if(!beanId)return;
  if(!dose||!y||!time){(!dose?$('dose'):!y?$('yield'):$('time')).focus();return}
- const f={beanId,dose,yield:y,time,clicks:val('clicks'),taste:radio('taste'),rating:+radio('rating')||0,notes:$('notes').value.trim()};
+ const f={beanId,dose,yield:y,time,clicks:val('clicks'),taste:radio('taste'),drink:radio('drink')||'Black',rating:+radio('rating')||0,notes:$('notes').value.trim()};
  const ex=editShot&&shots.find(x=>x.id===editShot);
  if(ex){Object.assign(ex,f,{u:Date.now()});flash=ex.id;endEdit()}
  else{
-  shots.push({id:uid('s'),at:Date.now(),...f});
+  const nid=uid('s');shots.push({id:nid,at:Date.now(),...f});flash=nid;
   ['yield','time','notes'].forEach(k=>$(k).value='');
   document.querySelectorAll('input[name=taste],input[name=rating]').forEach(r=>r.checked=false);
  }
  commit();toast(ex?'Shot updated':'Shot logged');
+ if(!ex)show('overview');
 };
 function startEdit(id){
  const s=shots.find(x=>String(x.id)===id);if(!s)return;
@@ -574,9 +606,10 @@ function startEdit(id){
  ['dose','yield','time','clicks'].forEach(k=>$(k).value=s[k]??'');
  $('notes').value=s.notes||'';
  document.querySelectorAll('input[name=taste]').forEach(r=>r.checked=r.value===s.taste);
+ document.querySelectorAll('input[name=drink]').forEach(r=>r.checked=r.value===(s.drink||'Black'));
  document.querySelectorAll('input[name=rating]').forEach(r=>r.checked=r.value===String(s.rating));
  setBtn($('save'),'Save changes','check');$('cancel-shot').hidden=false;
- $('editnote').hidden=false;$('editnote').textContent='Editing the shot from '+new Date(s.at).toLocaleDateString(undefined,{month:'short',day:'numeric'})+'. Saving replaces the original.';
+ $('editnote').hidden=false;$('editnote').textContent='Editing the shot from '+new Date(s.at).toLocaleDateString(undefined,{month:'short',day:'numeric'})+', '+tm(s.at)+'. Saving replaces the original.';
  show('log');live();
 }
 function endEdit(){
@@ -584,6 +617,7 @@ function endEdit(){
  if(back&&back!=='log')show(back);
 }
 $('cancel-shot').onclick=endEdit;
+$('latest').onclick=e=>{const b=e.target.closest('[data-edit]');if(b)startEdit(b.dataset.edit)};
 $('list').onclick=e=>{
  const t=e.target.closest('button');if(!t)return;
  if(t.dataset.edit)return startEdit(t.dataset.edit);
@@ -650,11 +684,38 @@ function list(){
  $('list').innerHTML=v.map(s=>{
   const b=beanOf(s.beanId)||{},c=shotCost(b,s),rs=restOf(b,dstr(s.at));
   return `<div class="row${s.id===flash?' flash':''}">
-  <div><div class="t">${esc(b.name||'Unknown bean')}</div><div class="m">${esc(b.roast||'')} roast &nbsp; ${new Date(s.at).toLocaleDateString(undefined,{month:'short',day:'numeric'})}, day ${rs.n??'–'} since ${rs.w}</div></div>
+  <div><div class="t">${esc(b.name||'Unknown bean')}</div><div class="m">${esc(b.roast||'')} roast &nbsp; ${new Date(s.at).toLocaleDateString(undefined,{month:'short',day:'numeric'})}, ${tm(s.at)}, day ${rs.n??'–'} since ${rs.w}</div></div>
   <div class="acts"><button class="q" data-edit="${esc(s.id)}">${icon('edit')}Edit</button><button class="q" data-del="${esc(s.id)}" aria-label="Delete shot">${icon('trash')}Delete</button></div>
-  <div class="d"><span>${s.dose}g in</span><span>${s.yield}g out</span><span>1:${(s.yield/s.dose).toFixed(1)}</span><span>${s.time}s</span><span>${s.clicks} clicks</span>${s.taste?`<span><i class="dot" style="background:${tasteCol[s.taste]}"></i>${s.taste}</span>`:''}${s.rating?`<span>${s.rating}/5</span>`:''}${c?`<span>${money(c)}</span>`:''}</div>
+  <div class="d"><span>${s.dose}g in</span><span>${s.yield}g out</span><span>1:${(s.yield/s.dose).toFixed(1)}</span><span>${s.time}s</span><span>${s.clicks} clicks</span>${s.drink?`<span>${esc(s.drink)}</span>`:''}${s.taste?`<span><i class="dot" style="background:${tasteCol[s.taste]}"></i>${s.taste}</span>`:''}${s.rating?`<span>${s.rating}/5</span>`:''}${c?`<span>${money(c)}</span>`:''}</div>
   ${s.notes?`<div class="note">${esc(s.notes)}</div>`:''}</div>`;
  }).join('');
+}
+function latest(){
+ const sec=$('latest-sec');
+ if(!shots.length){sec.hidden=true;return}
+ sec.hidden=false;
+ const s=[...shots].sort((a,b)=>b.at-a.at)[0],b=beanOf(s.beanId)||{},rs=restOf(b,dstr(s.at));
+ const ratio=s.yield/s.dose,flow=s.yield/s.time,c=shotCost(b,s);
+ const clamp=(v,lo,hi)=>Math.min(hi,Math.max(lo,v));
+ const gauge=(label,val,txt,lo,hi,b0,b1,status,ok,e0,e1)=>{
+  const pos=v=>(clamp(v,lo,hi)-lo)/(hi-lo)*100;
+  return `<div class="gauge"><div class="gl"><span>${label}</span><b>${txt}</b></div><div class="track"><i class="band" style="left:${pos(b0).toFixed(1)}%;width:${(pos(b1)-pos(b0)).toFixed(1)}%"></i><i class="mk" style="left:${pos(val).toFixed(1)}%"></i></div><div class="scale"><span>${e0}</span><span class="${ok?'ok':''}">${status}</span><span>${e1}</span></div></div>`;
+ };
+ const tOk=s.time>=25&&s.time<=30,rOk=ratio>=1.8&&ratio<=2.5;
+ const prev=shots.filter(x=>x.beanId===s.beanId&&x.at<s.at).sort((a,b)=>b.at-a.at)[0];
+ const dl=(v,u)=>(v>0?'+':v<0?'\u2212':'')+Math.abs(+v.toFixed(1))+u;
+ let vs='<span>First shot of this bean.</span>';
+ if(prev){
+  const parts=[['Time',s.time-prev.time,'s'],['Yield',s.yield-prev.yield,'g'],['Dose',s.dose-prev.dose,'g'],['Clicks',s.clicks-prev.clicks,'']].filter(x=>x[1]!==0).map(x=>`<span>${x[0]} <b>${dl(x[1],x[2])}</b></span>`);
+  vs='<span>Versus the previous shot of this bean</span>'+(parts.length?parts.join(''):'<span><b>same settings</b></span>');
+ }
+ const F=(k,v)=>`<div><span class="k">${k}</span><span class="v">${v}</span></div>`;
+ $('latest').innerHTML=`<div class="top"><div><div class="t">${esc(b.name||'Unknown bean')}</div><div class="m">${new Date(s.at).toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})}, ${tm(s.at)}, day ${rs.n??'–'} since ${rs.w}</div></div><button class="q" data-edit="${esc(s.id)}">${icon('edit')}Edit</button></div>
+ <div class="lchips">${s.drink?`<span>${esc(s.drink)}</span>`:''}${s.taste?`<span><i class="dot" style="background:${tasteCol[s.taste]}"></i>${esc(s.taste)}</span>`:''}${s.rating?`<span>${s.rating}/5</span>`:''}${c?`<span>${money(c)}</span>`:''}</div>
+ <div class="gauges">${gauge('Time',s.time,s.time+'s',0,45,25,30,s.time<25?'Fast, under 25s':tOk?'In target range':'Slow, over 30s',tOk,'0s','45s')}${gauge('Ratio',ratio,'1:'+ratio.toFixed(1),1,3.5,1.8,2.5,ratio<1.8?'Short, under 1:1.8':rOk?'In typical range':'Long, over 1:2.5',rOk,'1:1','1:3.5')}</div>
+ <div class="facts">${F('Dose in',s.dose+'g')}${F('Yield out',s.yield+'g')}${F('Grinder clicks',s.clicks||'–')}${F('Flow',flow.toFixed(1)+' g/s')}</div>
+ ${s.notes?`<div class="note" style="margin-top:16px;color:var(--mute);font-style:italic;font-size:13px">${esc(s.notes)}</div>`:''}
+ <div class="vs">${vs}</div>`;
 }
 function week(){
  const v=shots.filter(s=>s.at>=Date.now()-7*864e5);
@@ -667,7 +728,7 @@ function week(){
 function render(){
  if(filter!=='all'&&!beanOf(filter))filter='all';
  $('filter').innerHTML='<option value="all">All beans</option>'+beans.map(b=>`<option value="${esc(b.id)}"${b.id===filter?' selected':''}>${esc(b.name)}</option>`).join('');
- renderSel();renderBeans();week();stats();chart();list();flash=null;
+ renderSel();renderBeans();week();latest();stats();chart();list();flash=null;
 }
 
 /* pour over */
@@ -728,8 +789,8 @@ const dl=(name,text,type)=>{const a=document.createElement('a');a.href=URL.creat
 $('ex-json').onclick=()=>dl('espresso-log.json',JSON.stringify({beans,shots,deleted},null,1),'application/json');
 $('ex-csv').onclick=()=>{
  const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
- const h=['date','bean','roast','purchased','roasted','dose_g','yield_g','ratio','time_s','clicks','taste','rating','cost','notes'];
- const rows=shots.map(x=>{const b=beanOf(x.beanId)||{};return[dstr(x.at),b.name,b.roast,b.bought,b.roasted||'',x.dose,x.yield,(x.yield/x.dose).toFixed(2),x.time,x.clicks,x.taste,x.rating||'',shotCost(b,x)?shotCost(b,x).toFixed(2):'',x.notes].map(q).join(',')});
+ const h=['date','logged_time','bean','roast','purchased','roasted','dose_g','yield_g','ratio','time_s','clicks','taste','drink','rating','cost','notes'];
+ const rows=shots.map(x=>{const b=beanOf(x.beanId)||{};return[dstr(x.at),new Date(x.at).toTimeString().slice(0,5),b.name,b.roast,b.bought,b.roasted||'',x.dose,x.yield,(x.yield/x.dose).toFixed(2),x.time,x.clicks,x.taste,x.drink||'',x.rating||'',shotCost(b,x)?shotCost(b,x).toFixed(2):'',x.notes].map(q).join(',')});
  dl('espresso-log.csv',[h.join(','),...rows].join('\n'),'text/csv');
 };
 $('im').onchange=e=>{
