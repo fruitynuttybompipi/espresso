@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Dialed</title>
+<meta name="theme-color" content="#eeeeea" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141311" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Dialed">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%98%95%3C/text%3E%3C/svg%3E">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
@@ -157,8 +163,8 @@ button:active{transform:scale(.96)}
 #sync[data-s=ok]::before{background:var(--bal)}
 #sync[data-s=busy]::before{background:var(--btn);animation:pulse 1s ease-in-out infinite}
 @keyframes pulse{50%{opacity:.25;transform:scale(.7)}}
-#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,16px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:99px;font-size:14px;font-weight:600;display:flex;gap:8px;align-items:center;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:9}
-#toast .i{color:var(--btn)}
+#toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top,0px));transform:translate(-50%,-18px);background:var(--btn);color:#fff;box-shadow:0 8px 24px rgba(255,89,38,.35);padding:10px 18px;border-radius:99px;font-size:14px;font-weight:600;display:flex;gap:8px;align-items:center;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:9}
+#toast .i{color:#fff}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 .empty::before{content:'';display:block;width:34px;height:34px;margin:0 auto 12px;background:var(--mute);opacity:.45;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z'/%3E%3Cpath d='M16 10h1.5a2.5 2.5 0 0 1 0 5H16'/%3E%3Cpath d='M8 3v2M12 3v2'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z'/%3E%3Cpath d='M16 10h1.5a2.5 2.5 0 0 1 0 5H16'/%3E%3Cpath d='M8 3v2M12 3v2'/%3E%3C/svg%3E") center/contain no-repeat}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;animation-delay:0s!important;transition-duration:.01ms!important}}
@@ -211,6 +217,79 @@ main{width:100%;flex:1 0 auto}
 .vs b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
 @keyframes slide{from{left:0}}
 .view-in .track .mk{animation:slide .9s cubic-bezier(.2,.8,.2,1) both}
+
+/* app-like feel */
+html{background:var(--bg);-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%}
+body{touch-action:manipulation;overscroll-behavior-y:contain}
+button,.nav,.seg span,.tabs,h1,h2,summary{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input,select,textarea{font-size:16px}
+@media (max-width:640px){
+ :root{--navh:68px}
+ body{padding-bottom:calc(var(--navh) + env(safe-area-inset-bottom,0px))}
+ main{padding-top:0;padding-bottom:28px}
+ .head{position:sticky;top:0;z-index:15;align-items:center;margin:0 -20px 18px;padding:12px 20px 10px;background:var(--bg);background:color-mix(in srgb,var(--bg) 86%,transparent);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+ .head h1{font-size:26px;margin:0}
+ .logo{width:30px;height:30px}
+ .head .sub{display:none}
+ .gear{width:44px;height:44px;min-height:0;margin:0}
+ .tabs.nav{position:fixed;left:0;right:0;bottom:0;z-index:20;margin:0;display:grid;grid-template-columns:repeat(3,1fr);gap:0;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));background:var(--bg);background:color-mix(in srgb,var(--bg) 88%,transparent);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border-top:1px solid var(--line)}
+ .tabs.nav button{flex-direction:column;gap:3px;min-height:0;padding:6px 0;font-size:11px;font-weight:500;background:transparent;color:var(--mute);border-radius:12px}
+ .tabs.nav button[aria-pressed=true]{background:transparent;color:var(--btn);font-weight:600}
+ .tabs.nav .i{width:22px;height:22px;transition:transform .25s cubic-bezier(.2,.9,.3,1.4)}
+ .tabs.nav button[aria-pressed=true] .i{transform:translateY(-1px) scale(1.12)}
+ #toast{z-index:30}
+ button{min-height:44px}
+ button.q{min-height:40px;padding:8px 12px}
+ .tabs button{min-height:38px}
+ .seg span{padding:9px 16px}
+ input[type=text],input[type=number],input[type=date]{padding:10px 0}
+ .pick{padding:12px}
+ #logform .live{position:sticky;bottom:calc(var(--navh) + env(safe-area-inset-bottom,0px));z-index:5;margin:18px -20px -20px;padding:12px 20px 16px;gap:8px 20px;align-items:flex-end;background:var(--card);border-top:1px solid var(--line);border-radius:0 0 14px 14px;box-shadow:0 -10px 18px -14px rgba(0,0,0,.28)}
+ .live .big{font-size:24px}
+ .live .big small{display:block;margin:3px 0 0;font:11px -apple-system,sans-serif}
+ .live .n{width:100%;margin:6px 0 0}
+ .live .n button{flex:1;min-height:48px;font-size:16px}
+}
+
+/* targets, best shot, suggestions, guide */
+.tg{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--bg)}
+.tg .k{display:block;font-size:12px;color:var(--mute)}
+.tg .v{display:block;font-size:13px;font-variant-numeric:tabular-nums}
+.tg button{border:1px solid var(--line);flex:none}
+.q.on{color:var(--btn)}
+.q.on .i{fill:currentColor}
+.bestchip{color:var(--btn);font-weight:600}
+.lchips .bestchip{background:transparent;border:1px solid var(--btn);font-weight:600}
+.more{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 0 0;color:var(--mute);font-size:13px}
+.more button{border:1px solid var(--line)}
+.next{margin-top:20px;padding:16px;border-radius:12px;background:var(--bg);border-left:3px solid var(--btn)}
+.next .nh{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mute)}
+.next .nt{font:400 20px/1.3 Georgia,serif;margin:6px 0}
+.next p{margin:0 0 10px;font-size:14px;color:var(--mute)}
+.next ul{margin:0 0 14px;padding-left:18px;font-size:14px;font-variant-numeric:tabular-nums}
+.next li{margin:3px 0}
+#guide{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:calc(24px + env(safe-area-inset-top,0px)) 24px calc(24px + env(safe-area-inset-bottom,0px))}
+.gbox{width:100%;max-width:380px;text-align:center}
+.gico{width:84px;height:84px;margin:0 auto 26px;border-radius:26px;background:var(--btn);color:#fff;display:grid;place-items:center;box-shadow:0 12px 28px rgba(255,89,38,.3)}
+.gico .i{width:40px;height:40px;stroke-width:1.6}
+.gbox h2{font:400 28px/1.2 Georgia,serif;margin:0 0 12px}
+.gbox p{color:var(--mute);margin:0 auto 28px;max-width:320px}
+.gdots{display:flex;justify-content:center;gap:8px;margin-bottom:30px}
+.gdots i{width:8px;height:8px;border-radius:99px;background:var(--line);transition:width .3s,background-color .3s}
+.gdots i.on{width:24px;background:var(--btn)}
+.gacts{display:flex;gap:10px;justify-content:center}
+.gacts #g-next{min-width:150px}
+.gstep .gico,.gstep h2,.gstep p{animation:rise .45s cubic-bezier(.2,.7,.2,1) both}
+.gstep h2{animation-delay:.05s}.gstep p{animation-delay:.1s}
+@media (max-width:640px){
+ .row{grid-template-columns:1fr}
+ .row>:first-child{order:1}.row>.d{order:2}.row>.note{order:3}
+ .row>.acts{order:4;margin-top:6px}
+ .row .acts button.q{flex:1 1 0;border:1px solid var(--line)}
+ .latest .top{flex-direction:column}
+ .latest .top .acts{width:100%}
+ .latest .top .acts button{flex:1 1 0;border:1px solid var(--line)}
+}
 </style>
 </head>
 <body>
@@ -234,7 +313,7 @@ main{width:100%;flex:1 0 auto}
 <div class="card" id="logform">
 <div class="grid">
 <div class="info span4" id="editnote" hidden></div>
-<div class="f span4"><label class="l" for="sel">Bean</label><select id="sel" class="pick"></select><div class="info" id="beaninfo"></div></div>
+<div class="f span4"><label class="l" for="sel">Bean</label><select id="sel" class="pick"></select><div class="info" id="beaninfo"></div><div id="targets"></div></div>
 <div class="f"><label class="l" for="dose">Dose in (g)</label><input type="number" id="dose" step="0.1" inputmode="decimal" placeholder="18"></div>
 <div class="f"><label class="l" for="yield">Yield out (g)</label><input type="number" id="yield" step="0.1" inputmode="decimal" placeholder="36"></div>
 <div class="f"><label class="l" for="time">Time (s)</label><input type="number" id="time" step="0.5" inputmode="decimal" placeholder="28"></div>
@@ -331,7 +410,10 @@ main{width:100%;flex:1 0 auto}
 </section>
 <section>
 <h2>Preferences</h2>
-<div class="card"><div class="grid"><div class="f span2"><label class="l" for="pref-cur">Currency symbol</label><input type="text" id="pref-cur" placeholder="$" maxlength="4" autocomplete="off"></div></div><p class="help">Used for cost per shot. Saved on this device only.</p></div>
+<div class="card"><div class="grid"><div class="f span2"><label class="l" for="pref-cur">Currency symbol</label><input type="text" id="pref-cur" placeholder="$" maxlength="4" autocomplete="off"></div></div><div class="f span4" style="margin-top:20px"><span class="l">Grinder direction, used for next-shot suggestions</span>
+<div class="seg"><label><input type="radio" name="dir" value="coarser"><span>More clicks = coarser</span></label><label><input type="radio" name="dir" value="finer"><span>More clicks = finer</span></label></div></div>
+<p class="help">Currency is used for cost per shot. Preferences are saved on this device only.</p>
+<div class="acts"><button class="q" id="guide-again" style="border:1px solid var(--line)">Show the quick guide again</button></div></div>
 </section>
 <section>
 <h2>Backup</h2>
@@ -341,6 +423,7 @@ main{width:100%;flex:1 0 auto}
 </main>
 <footer class="foot"><span id="sync"></span></footer>
 <div id="toast" role="status" aria-live="polite"></div>
+<div id="guide" hidden role="dialog" aria-modal="true" aria-label="Quick guide"><div class="gbox" id="gbox"><div class="gico" id="g-ico"></div><h2 id="g-t"></h2><p id="g-p"></p><div class="gdots" id="g-dots"></div><div class="gacts"><button class="q" id="g-skip">Skip</button><button id="g-next">Next</button></div></div></div>
 
 <script>
 const KEY='espresso-log-v2',OLDKEY='espresso-log-v1',CK='espresso-gh-v1',SELK='espresso-sel';
@@ -360,6 +443,10 @@ const IC={
  bean:'<ellipse cx="12" cy="12" rx="5.2" ry="8.2" transform="rotate(40 12 12)"/><path d="M12 4.2c-2.2 2.6 2.2 5 0 7.8s2.2 5.2 0 7.8" transform="rotate(40 12 12)"/>',
  chart:'<path d="M5 20V10M12 20V4M19 20v-7"/>',
  plus:'<path d="M12 5v14M5 12h14"/>',
+ next:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+ star:'<path d="M12 3.6l2.5 5.2 5.7.8-4.1 4 1 5.7-5.1-2.7-5.1 2.7 1-5.7-4.1-4 5.7-.8z"/>',
+ bulb:'<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/>',
+ gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
  check:'<path d="M5 12.5l4.5 4.5L19 7"/>',
  done:'<circle cx="12" cy="12" r="8.5"/><path d="M8.2 12.4l2.5 2.5 5-5.3"/>',
  edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',
@@ -368,6 +455,7 @@ const IC={
 };
 const icon=n=>`<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n]}</svg>`;
 const setBtn=(el,t,i)=>{el.innerHTML=icon(i)+esc(t)};
+const buzz=ms=>{try{if(navigator.vibrate)navigator.vibrate(ms)}catch(e){}};
 const toast=m=>{const t=$('toast');t.innerHTML=icon('check')+esc(m);t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1900)};
 
 /* data: beans, shots, deleted (ids of removed beans and shots) */
@@ -395,12 +483,13 @@ function merge(a,b){
  return{beans:[...bm.values()].sort((x,y)=>(x.at||0)-(y.at||0)),shots:[...sm.values()].sort((x,y)=>x.at-y.at),deleted:[...del].sort(sk)};
 }
 let beans=[],shots=[],deleted=[];
-let flash=null,animChart=false,vt,tt;
+let flash=null,animChart=false,vt,tt,lim=30;
 const setData=d=>{beans=d.beans;shots=d.shots;deleted=d.deleted};
 try{setData(merge(JSON.parse(localStorage.getItem(KEY)||localStorage.getItem(OLDKEY)),{}))}catch(e){}
 const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify({beans,shots,deleted}))}catch(e){}};
 const beanOf=id=>beans.find(b=>b.id===id);
 const bname=id=>(beanOf(id)||{name:'Unknown bean'}).name;
+let prefDir='coarser';try{prefDir=localStorage.getItem('espresso-dir')==='finer'?'finer':'coarser'}catch(e){}
 let curr='$';try{curr=localStorage.getItem('espresso-cur')??'$'}catch(e){}
 const money=v=>curr+v.toFixed(2);
 const cap=t=>t.charAt(0).toUpperCase()+t.slice(1);
@@ -413,6 +502,17 @@ function bagOf(b){
 }
 const bagTxt=b=>{const g=bagOf(b);return g?Math.round(g.left)+'g of '+b.weight+'g left'+(g.st==='empty'?', bag empty':g.st==='low'?', running low':''):''};
 const shotCost=(b,s)=>b&&b.weight&&b.price?s.dose*b.price/b.weight:0;
+const r1=v=>Math.round(v*10)/10;
+const bestOf=b=>b&&b.best?shots.find(x=>x.id===b.best&&x.beanId===b.id):null;
+function goodOf(id){
+ const all=shots.filter(x=>x.beanId===id);
+ let g=all.filter(x=>(x.rating||0)>=4),basis='rated';
+ if(!g.length){g=all.filter(x=>x.taste==='Balanced');basis='balanced'}
+ if(!g.length)return null;
+ const av=f=>g.reduce((a,x)=>a+(+x[f]||0),0)/g.length,cl=g.filter(x=>x.clicks>0);
+ return{n:g.length,basis,dose:av('dose'),yield:av('yield'),time:av('time'),clicks:cl.length?cl.reduce((a,x)=>a+x.clicks,0)/cl.length:0};
+}
+const sumTxt=o=>r1(o.dose)+'g in, '+r1(o.yield)+'g out, '+Math.round(o.time)+'s'+(o.clicks?', '+Math.round(o.clicks*2)/2+' clicks':'');
 
 /* GitHub sync */
 let cfg={};try{cfg=JSON.parse(localStorage.getItem(CK))||{}}catch(e){}
@@ -469,7 +569,7 @@ function show(v){
  if(v==='overview'){animChart=true;chart()}
 }
 $('gear').onclick=()=>show(view==='settings'?last:'settings');
-$('nav').onclick=e=>{const b=e.target.closest('button');if(b&&b.dataset.v)show(b.dataset.v)};
+$('nav').onclick=e=>{const b=e.target.closest('button');if(b&&b.dataset.v){buzz(8);show(b.dataset.v)}};
 [...$('nav').children].forEach(b=>{b.innerHTML=icon({log:'cup',beans:'bean',overview:'chart'}[b.dataset.v])+b.textContent});
 $('go-beans').onclick=()=>{show('beans');$('bn-name').focus()};
 
@@ -520,13 +620,15 @@ function renderBeans(){
  $('bean-filter').hidden=!beans.length;
  if(!beans.length){$('bean-list').innerHTML='<div class="empty">No beans yet. Add your first one above.</div>';return}
  const F=(k,v)=>`<div><span class="k">${k}</span><span class="v">${v}</span></div>`;
+ const W=(k,v,sm)=>`<div style="grid-column:1/-1"><span class="k">${k}</span><span class="v">${v}${sm?`<small>${sm}</small>`:''}</span></div>`;
  const card=b=>{
-  const fin=!!b.finished,end=b.finished||today(),n=shots.filter(x=>x.beanId===b.id).length,isA=armed===b.id,g=bagOf(b),id=esc(b.id);
+  const fin=!!b.finished,end=b.finished||today(),n=shots.filter(x=>x.beanId===b.id).length,isA=armed===b.id,g=bagOf(b),id=esc(b.id),bs=bestOf(b),gd=goodOf(b.id);
   const facts=(b.roasted?F('Roasted',esc(fmtD(b.roasted)))+F('Rested',days(b.roasted,end)+' days'):'')
    +F('Bought',esc(fmtD(b.bought)))+(b.roasted?'':F('Age',days(b.bought,end)+' days'))
    +F('Shots',n)
    +(fin?F('Finished',esc(fmtD(b.finished))):(g?F('Bag left',Math.round(g.left)+'g of '+b.weight+'g'+(g.st==='ok'?'':`<small class="low">${g.st==='empty'?'Bag empty':'Running low'}</small>`)):''))
-   +(g&&b.price?F('Cost per shot','about '+money(b.price/b.weight*g.avg)):'');
+   +(g&&b.price?F('Cost per shot','about '+money(b.price/b.weight*g.avg)):'')
+   +(bs?W('Best shot',sumTxt(bs)):'')+(gd&&!(bs&&sumTxt(bs)===sumTxt(gd))?W('Average of '+gd.n+' good '+(gd.n===1?'shot':'shots'),sumTxt(gd),gd.basis==='rated'?'From shots rated 4 or 5':'From Balanced shots. Rate shots 4 or 5 for a sharper average'):'');
   const meter=g&&!fin?`<div class="meter${g.st==='ok'?'':' low'}"><i style="width:${Math.min(100,Math.round(g.left/b.weight*100))}%"></i></div>`:'';
   const tags=b.tags&&b.tags.length?`<div class="chips">${b.tags.map(t=>`<span>${esc(cap(t))}</span>`).join('')}</div>`:'';
   const del=`<button class="${isA?'warn':'q'}" data-a="del" data-id="${id}">${icon('trash')}${isA?(n?'Delete bean and '+n+(n===1?' shot':' shots'):'Confirm delete'):'Delete'}</button>`;
@@ -582,8 +684,24 @@ function renderSel(){
  $('nobeans').hidden=av.length>0;$('logform').hidden=!av.length;
  const b=beanOf(cur),g=bagOf(b);
  $('beaninfo').innerHTML=b?esc(b.roast)+' roast, '+(b.roasted?'roasted '+esc(b.roasted)+', ':'')+'purchased '+esc(b.bought)+(b.tags&&b.tags.length?'<br>'+esc(b.tags.map(cap).join(', ')):'')+(g?`<br><span class="${g.st==='ok'?'':'low'}">${esc(bagTxt(b))}</span>`:''):'';
+ renderTargets(b);
  live();
 }
+function renderTargets(b){
+ const t=$('targets');
+ if(!b||editShot){t.innerHTML='';return}
+ const best=bestOf(b),good=goodOf(b.id);
+ const row=(k,o,w)=>`<div class="tg"><div><span class="k">${k}</span><span class="v">${sumTxt(o)}</span></div><button class="q" data-use="${w}">Use</button></div>`;
+ const same=best&&good&&sumTxt(best)===sumTxt(good);
+ t.innerHTML=(best?row('Best shot',best,'best'):'')+(good&&!same?row('Average of '+good.n+' good '+(good.n===1?'shot':'shots'),good,'good'):'');
+}
+$('targets').onclick=e=>{
+ const bt=e.target.closest('[data-use]');if(!bt)return;
+ const b=beanOf(sel());if(!b)return;
+ const o=bt.dataset.use==='best'?bestOf(b):goodOf(b.id);if(!o)return;
+ $('dose').value=r1(o.dose);$('yield').value=r1(o.yield);$('clicks').value=o.clicks?Math.round(o.clicks*2)/2:'';$('time').value='';
+ live();toast('Settings filled in');
+};
 let editShot=null,editFrom=null;
 $('save').onclick=()=>{
  const beanId=sel(),dose=val('dose'),y=val('yield'),time=val('time');
@@ -597,7 +715,7 @@ $('save').onclick=()=>{
   ['yield','time','notes'].forEach(k=>$(k).value='');
   document.querySelectorAll('input[name=taste],input[name=rating]').forEach(r=>r.checked=false);
  }
- commit();toast(ex?'Shot updated':'Shot logged');
+ buzz(15);commit();toast(ex?'Shot updated':'Shot logged');
  if(!ex)show('overview');
 };
 function startEdit(id){
@@ -617,9 +735,16 @@ function endEdit(){
  if(back&&back!=='log')show(back);
 }
 $('cancel-shot').onclick=endEdit;
-$('latest').onclick=e=>{const b=e.target.closest('[data-edit]');if(b)startEdit(b.dataset.edit)};
+$('latest').onclick=e=>{
+ const t=e.target.closest('button');if(!t)return;
+ if(t.dataset.edit)return startEdit(t.dataset.edit);
+ if(t.dataset.best)return toggleBest(t.dataset.best);
+ if(t.dataset.try)return tryNext();
+};
 $('list').onclick=e=>{
  const t=e.target.closest('button');if(!t)return;
+ if(t.id==='more'){lim+=30;list();return}
+ if(t.dataset.best)return toggleBest(t.dataset.best);
  if(t.dataset.edit)return startEdit(t.dataset.edit);
  const id=t.dataset.del;if(!id)return;
  if(String(editShot)===id)endEdit();
@@ -629,7 +754,7 @@ $('list').onclick=e=>{
 /* trend */
 $('tabs').innerHTML=Object.keys(M).map(k=>`<button data-k="${k}" aria-pressed="${k===metric}">${M[k].name}</button>`).join('');
 $('tabs').onclick=e=>{const k=e.target.dataset.k;if(!k)return;metric=k;[...$('tabs').children].forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));animChart=true;chart()};
-const onF=()=>{animChart=true;stats();chart();list()};
+const onF=()=>{animChart=true;lim=30;stats();chart();list()};
 $('filter').onchange=e=>{filter=e.target.value;onF()};
 $('f-taste').onchange=e=>{ft=e.target.value;onF()};
 $('f-rating').onchange=e=>{fr=+e.target.value;onF()};
@@ -642,29 +767,35 @@ function stats(){
 }
 function scatter(v,an){
  v=v.filter(s=>s.clicks>0);
+ if(v.length>300)v=v.slice(-300);
+ const bs=filter!=='all'?bestOf(beanOf(filter)):null,bOk=!!(bs&&bs.clicks>0&&bs.time>0);
  if(!v.length){$('chart').innerHTML='<div class="empty">Log shots with grinder clicks to see your sweet spot.</div>';return}
  const W=640,H=250,pl=40,pr=14,pt=12,pb=28;
- let xl=Math.min(...v.map(s=>s.clicks)),xh=Math.max(...v.map(s=>s.clicks));
+ const xs=v.map(s=>s.clicks).concat(bOk?[bs.clicks]:[]);let xl=Math.min(...xs),xh=Math.max(...xs);
  if(xl===xh){xl-=1;xh+=1}
  const xp=(xh-xl)*.1;xl-=xp;xh+=xp;
- const ts=v.map(s=>s.time);let yl=Math.min(...ts,25),yh=Math.max(...ts,30);
+ const ts=v.map(s=>s.time).concat(bOk?[bs.time]:[]);let yl=Math.min(...ts,25),yh=Math.max(...ts,30);
  const yp=(yh-yl)*.12;yl-=yp;yh+=yp;
  const X=x=>pl+(x-xl)/(xh-xl)*(W-pl-pr),Y=y=>pt+(yh-y)/(yh-yl)*(H-pt-pb);
  let g='';
  for(let k=0;k<=3;k++){const y=yl+(yh-yl)*k/3,py=Y(y);g+=`<line x1="${pl}" x2="${W-pr}" y1="${py}" y2="${py}" stroke="var(--line)"/><text x="${pl-8}" y="${py+4}" text-anchor="end">${Math.round(y)}</text>`}
  for(let k=0;k<=4;k++){const x=xl+(xh-xl)*k/4;g+=`<text x="${X(x)}" y="${H-8}" text-anchor="middle">${Math.round(x*2)/2}</text>`}
  const band=`<rect x="${pl}" width="${W-pl-pr}" y="${Y(30)}" height="${Y(25)-Y(30)}" fill="var(--band)" rx="3"/>`;
+ const ring=bOk?`<g><circle cx="${X(bs.clicks)}" cy="${Y(bs.time)}" r="13" fill="none" stroke="var(--btn)" stroke-width="2" stroke-dasharray="4 3"/><text x="${X(bs.clicks)}" y="${Y(bs.time)-18}" text-anchor="middle" style="fill:var(--btn);font-weight:600">Best</text></g>`:'';
  const dots=v.map((s,i)=>`<circle class="${an?'dotin':''}" style="animation-delay:${Math.min(i*.04,.8)}s" cx="${X(s.clicks)}" cy="${Y(s.time)}" r="6.5" fill="${tasteCol[s.taste]||'var(--bg)'}" fill-opacity=".9" stroke="var(--ink)" stroke-width="1.5"><title>${esc(bname(s.beanId))}: ${s.clicks} clicks, ${s.time}s${s.taste?' ('+s.taste+')':''}${s.rating?', '+s.rating+'/5':''}</title></circle>`).join('');
- $('chart').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Grinder clicks against shot time">${band}${g}${dots}</svg>`;
+ $('chart').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Grinder clicks against shot time">${band}${g}${ring}${dots}</svg>`;
 }
 function chart(){
- const v=view_(),m=M[metric],an=animChart;animChart=false;
+ const all=view_(),m=M[metric],an=animChart;animChart=false;let v=all;
  $('charthint').textContent=metric==='spot'?(filter==='all'?'Pick one bean in the filter to see its own sweet spot, since grinder settings differ per bean. Each dot is a shot, clicks across and seconds up.':'Each dot is a shot, clicks across and seconds up. The shaded band marks 25 to 30 seconds.'):'';
  if(!v.length){$('chart').innerHTML=`<div class="empty">${shots.length?'No shots match these filters.':'No shots yet. Log your first one on the Log tab.'}</div>`;return}
- if(metric==='spot')return scatter(v,an);
+ if(metric==='spot')return scatter(all,an);
+ if(v.length>60){v=v.slice(-60);$('charthint').textContent='Showing the latest 60 of '+all.length+' shots.'}
+ const bs=filter!=='all'?bestOf(beanOf(filter)):null,bv=bs?m.get(bs):null,hasB=bv!=null&&isFinite(bv)&&bv>0;
  const W=640,H=230,pl=36,pr=10,pt=12,pb=26;
  const ys=v.map(m.get);let lo=Math.min(...ys),hi=Math.max(...ys);
  if(m.band){lo=Math.min(lo,m.band[0]);hi=Math.max(hi,m.band[1])}
+ if(hasB){lo=Math.min(lo,bv);hi=Math.max(hi,bv)}
  if(lo===hi){lo-=1;hi+=1}
  const pad=(hi-lo)*.12;lo-=pad;hi+=pad;
  const X=i=>v.length===1?(pl+W-pr)/2:pl+i*(W-pl-pr)/(v.length-1);
@@ -674,28 +805,88 @@ function chart(){
  const band=m.band?`<rect x="${pl}" width="${W-pl-pr}" y="${Y(m.band[1])}" height="${Y(m.band[0])-Y(m.band[1])}" fill="var(--band)" rx="3"/>`:'';
  const pts=v.map((s,i)=>X(i)+','+Y(m.get(s))).join(' ');
  const dots=v.map((s,i)=>`<circle class="${an?'dotin':''}" style="animation-delay:${Math.min(i*.03+.35,1)}s" cx="${X(i)}" cy="${Y(m.get(s))}" r="5.5" fill="${tasteCol[s.taste]||'var(--bg)'}" stroke="var(--ink)" stroke-width="1.5"><title>${esc(bname(s.beanId))}, ${new Date(s.at).toLocaleDateString()}: ${m.fmt(m.get(s))}${s.taste?' ('+s.taste+')':''}</title></circle>`).join('');
+ const bLine=hasB?`<line x1="${pl}" x2="${W-pr}" y1="${Y(bv)}" y2="${Y(bv)}" stroke="var(--btn)" stroke-width="1.5" stroke-dasharray="5 4"/><text x="${W-pr}" y="${Y(bv)-6}" text-anchor="end" style="fill:var(--btn);font-weight:600">Best</text>`:'';
  const step=Math.ceil(v.length/6);
  const xl=v.map((s,i)=>i%step===0?`<text x="${X(i)}" y="${H-6}" text-anchor="middle">${new Date(s.at).toLocaleDateString(undefined,{month:'short',day:'numeric'})}</text>`:'').join('');
- $('chart').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${m.name} per shot">${band}${g}<polyline ${an?'class="draw" pathLength="1"':''} points="${pts}" fill="none" stroke="var(--ink)" stroke-width="1.5" stroke-linejoin="round"/>${dots}${xl}</svg>`;
+ $('chart').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${m.name} per shot">${band}${g}${bLine}<polyline ${an?'class="draw" pathLength="1"':''} points="${pts}" fill="none" stroke="var(--ink)" stroke-width="1.5" stroke-linejoin="round"/>${dots}${xl}</svg>`;
 }
 function list(){
- const v=view_().reverse();
+ const all=view_().reverse(),v=all.slice(0,lim);
  if(!v.length){$('list').innerHTML=`<div class="empty">${shots.length?'No shots match these filters.':'Your shots will appear here.'}</div>`;return}
  $('list').innerHTML=v.map(s=>{
-  const b=beanOf(s.beanId)||{},c=shotCost(b,s),rs=restOf(b,dstr(s.at));
+  const b=beanOf(s.beanId)||{},c=shotCost(b,s),rs=restOf(b,dstr(s.at)),isB=b.best===s.id;
   return `<div class="row${s.id===flash?' flash':''}">
   <div><div class="t">${esc(b.name||'Unknown bean')}</div><div class="m">${esc(b.roast||'')} roast &nbsp; ${new Date(s.at).toLocaleDateString(undefined,{month:'short',day:'numeric'})}, ${tm(s.at)}, day ${rs.n??'–'} since ${rs.w}</div></div>
-  <div class="acts"><button class="q" data-edit="${esc(s.id)}">${icon('edit')}Edit</button><button class="q" data-del="${esc(s.id)}" aria-label="Delete shot">${icon('trash')}Delete</button></div>
-  <div class="d"><span>${s.dose}g in</span><span>${s.yield}g out</span><span>1:${(s.yield/s.dose).toFixed(1)}</span><span>${s.time}s</span><span>${s.clicks} clicks</span>${s.drink?`<span>${esc(s.drink)}</span>`:''}${s.taste?`<span><i class="dot" style="background:${tasteCol[s.taste]}"></i>${s.taste}</span>`:''}${s.rating?`<span>${s.rating}/5</span>`:''}${c?`<span>${money(c)}</span>`:''}</div>
+  <div class="acts"><button class="q${isB?' on':''}" data-best="${esc(s.id)}">${icon('star')}${isB?'Best':'Set best'}</button><button class="q" data-edit="${esc(s.id)}">${icon('edit')}Edit</button><button class="q" data-del="${esc(s.id)}" aria-label="Delete shot">${icon('trash')}Delete</button></div>
+  <div class="d"><span>${s.dose}g in</span><span>${s.yield}g out</span><span>1:${(s.yield/s.dose).toFixed(1)}</span><span>${s.time}s</span><span>${s.clicks} clicks</span>${isB?'<span class="bestchip">Best</span>':''}${s.drink?`<span>${esc(s.drink)}</span>`:''}${s.taste?`<span><i class="dot" style="background:${tasteCol[s.taste]}"></i>${s.taste}</span>`:''}${s.rating?`<span>${s.rating}/5</span>`:''}${c?`<span>${money(c)}</span>`:''}</div>
   ${s.notes?`<div class="note">${esc(s.notes)}</div>`:''}</div>`;
- }).join('');
+ }).join('')+(all.length>lim?`<div class="more"><span>Showing ${v.length} of ${all.length}</span><button class="q" id="more">Show ${Math.min(30,all.length-lim)} more</button></div>`:'');
+}
+/* best shot, suggestions */
+function toggleBest(id){
+ const s=shots.find(x=>String(x.id)===id);if(!s)return;
+ const b=beanOf(s.beanId);if(!b)return;
+ const on=b.best===s.id;
+ b.best=on?'':s.id;b.u=Date.now();flash=null;
+ commit();toast(on?'Best shot cleared':'Saved as best shot');
+}
+const newClicks=(s,m)=>Math.max(1,s.clicks+(((m.d==='coarser')===(prefDir==='coarser'))?m.n:-m.n));
+const newYield=(s,m)=>Math.max(Math.round(s.dose*2.4)/2,Math.round((s.yield+m.d)*2)/2);
+function moveText(s,m){
+ if(m.t==='grind')return 'Grind '+m.d+' by '+m.n+' click'+(m.n>1?'s':'')+(s.clicks>0?', to '+newClicks(s,m)+' clicks':'');
+ return 'Yield '+newYield(s,m)+'g ('+(m.d>0?'+':'\u2212')+Math.abs(m.d)+'g)';
+}
+function suggest(s){
+ const ratio=s.yield/s.dose,fast=s.time<25,slow=s.time>30,inR=!fast&&!slow,rated=(s.rating||0)>=4;
+ const G=(d,n)=>({t:'grind',d,n}),Y=d=>({t:'yield',d});
+ let title,why,mv=[];
+ if(s.taste==='Sour'){
+  if(fast){title='Grind finer';why='Sour and fast usually means under-extracted. A finer grind slows the flow and pulls out more sweetness.';mv=[G('finer',2)]}
+  else if(slow){title='Run a longer ratio';why='Sour even though the shot ran slow. Keep the grind and add a little yield, or raise the water temperature if you can.';mv=[Y(3)]}
+  else{title='Pull a little longer';why='Sour with a normal time often needs a touch more extraction. Add some yield and go slightly finer.';mv=[Y(2),G('finer',1)]}
+ }else if(s.taste==='Bitter'){
+  if(slow){title='Grind coarser';why='Bitter and slow usually means over-extracted. A coarser grind speeds up the flow.';mv=[G('coarser',2)]}
+  else{title='Stop the shot earlier';why='Bitter with a normal time usually means pulling too long. Shorten the yield and go a touch coarser.';mv=[Y(-2),G('coarser',1)]}
+ }else if(s.taste==='Diluted'){
+  if(fast){title='Slow it down and stop earlier';why='Thin and fast. Grind finer and shorten the yield.';mv=[G('finer',2),Y(-2)]}
+  else{title='Pull a shorter shot';why='Diluted usually means too much water for the dose. Shorten the yield, or raise the dose by half a gram.';mv=[Y(-3)]}
+ }else if(s.taste==='Balanced'){
+  if(rated){title='Keep these settings';why='Balanced and rated well. Star it as your best shot so it is easy to repeat.'}
+  else if(!inR){title=fast?'Grind slightly finer':'Grind slightly coarser';why='It tastes balanced, but the time is outside 25 to 30 seconds. A small grind change can tighten it.';mv=[G(fast?'finer':'coarser',1)]}
+  else{title='Looks balanced';why='Rate it so the app learns what you like. For more clarity add 2g of yield, for more body take 2g off.'}
+ }else{
+  if(fast){title='Grind finer';why='Fast shots are usually under-extracted. Taste it and log the result for a sharper suggestion.';mv=[G('finer',1)]}
+  else if(slow){title='Grind coarser';why='Slow shots are often over-extracted. Taste it and log the result for a sharper suggestion.';mv=[G('coarser',1)]}
+  else if(ratio<1.8){title='Run a longer ratio';why='The ratio is shorter than the usual 1:1.8 to 1:2.5.';mv=[Y(Math.round(s.dose*2-s.yield))]}
+  else if(ratio>2.5){title='Run a shorter ratio';why='The ratio is longer than the usual 1:1.8 to 1:2.5.';mv=[Y(-Math.round(s.yield-s.dose*2))]}
+  else{title='In range';why='Time and ratio look typical. Log how it tasted to get a specific suggestion.'}
+ }
+ mv=mv.filter(m=>m.t==='grind'||m.d!==0);
+ const gm=mv.find(m=>m.t==='grind'),ym=mv.find(m=>m.t==='yield');
+ return{title,why,mv,apply:{clicks:gm&&s.clicks>0?newClicks(s,gm):null,yield:ym?newYield(s,ym):null}};
+}
+function nextHtml(s,b){
+ const sg=suggest(s),mv=sg.mv.map(m=>`<li>${esc(moveText(s,m))}</li>`).join('');
+ const grind=sg.mv.some(m=>m.t==='grind'),can=b&&b.id&&!b.finished;
+ return `<div class="next"><div class="nh">${icon('bulb')}Next shot</div><div class="nt">${esc(sg.title)}</div><p>${esc(sg.why)}</p>${mv?`<ul>${mv}</ul>`:''}${grind?`<div class="m" style="margin:-4px 0 12px">Assumes more clicks means a ${prefDir} grind. You can change this in settings.</div>`:''}${can?`<button class="main" data-try="1">${icon('plus')}Use these settings</button>`:''}</div>`;
+}
+function tryNext(){
+ const s=[...shots].sort((a,b)=>b.at-a.at)[0];if(!s)return;
+ const b=beanOf(s.beanId);if(!b||b.finished)return;
+ const sg=suggest(s);
+ if(editShot){editShot=null;editFrom=null;setBtn($('save'),'Log shot','plus');$('cancel-shot').hidden=true;$('editnote').hidden=true}
+ setMode('espresso',true);setSel(b.id);renderSel();
+ $('dose').value=s.dose;$('yield').value=sg.apply.yield??s.yield;$('clicks').value=sg.apply.clicks??(s.clicks||'');$('time').value='';$('notes').value='';
+ document.querySelectorAll('input[name=taste],input[name=rating]').forEach(r=>r.checked=false);
+ document.querySelectorAll('input[name=drink]').forEach(r=>r.checked=r.value===(s.drink||'Black'));
+ show('log');live();toast('Settings filled in');
 }
 function latest(){
  const sec=$('latest-sec');
  if(!shots.length){sec.hidden=true;return}
  sec.hidden=false;
  const s=[...shots].sort((a,b)=>b.at-a.at)[0],b=beanOf(s.beanId)||{},rs=restOf(b,dstr(s.at));
- const ratio=s.yield/s.dose,flow=s.yield/s.time,c=shotCost(b,s);
+ const ratio=s.yield/s.dose,flow=s.yield/s.time,c=shotCost(b,s),isB=b.best===s.id;
  const clamp=(v,lo,hi)=>Math.min(hi,Math.max(lo,v));
  const gauge=(label,val,txt,lo,hi,b0,b1,status,ok,e0,e1)=>{
   const pos=v=>(clamp(v,lo,hi)-lo)/(hi-lo)*100;
@@ -710,12 +901,12 @@ function latest(){
   vs='<span>Versus the previous shot of this bean</span>'+(parts.length?parts.join(''):'<span><b>same settings</b></span>');
  }
  const F=(k,v)=>`<div><span class="k">${k}</span><span class="v">${v}</span></div>`;
- $('latest').innerHTML=`<div class="top"><div><div class="t">${esc(b.name||'Unknown bean')}</div><div class="m">${new Date(s.at).toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})}, ${tm(s.at)}, day ${rs.n??'–'} since ${rs.w}</div></div><button class="q" data-edit="${esc(s.id)}">${icon('edit')}Edit</button></div>
- <div class="lchips">${s.drink?`<span>${esc(s.drink)}</span>`:''}${s.taste?`<span><i class="dot" style="background:${tasteCol[s.taste]}"></i>${esc(s.taste)}</span>`:''}${s.rating?`<span>${s.rating}/5</span>`:''}${c?`<span>${money(c)}</span>`:''}</div>
+ $('latest').innerHTML=`<div class="top"><div><div class="t">${esc(b.name||'Unknown bean')}</div><div class="m">${new Date(s.at).toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})}, ${tm(s.at)}, day ${rs.n??'–'} since ${rs.w}</div></div><div class="acts"><button class="q${isB?' on':''}" data-best="${esc(s.id)}">${icon('star')}${isB?'Best':'Set best'}</button><button class="q" data-edit="${esc(s.id)}">${icon('edit')}Edit</button></div></div>
+ <div class="lchips">${isB?'<span class="bestchip">Best shot</span>':''}${s.drink?`<span>${esc(s.drink)}</span>`:''}${s.taste?`<span><i class="dot" style="background:${tasteCol[s.taste]}"></i>${esc(s.taste)}</span>`:''}${s.rating?`<span>${s.rating}/5</span>`:''}${c?`<span>${money(c)}</span>`:''}</div>
  <div class="gauges">${gauge('Time',s.time,s.time+'s',0,45,25,30,s.time<25?'Fast, under 25s':tOk?'In target range':'Slow, over 30s',tOk,'0s','45s')}${gauge('Ratio',ratio,'1:'+ratio.toFixed(1),1,3.5,1.8,2.5,ratio<1.8?'Short, under 1:1.8':rOk?'In typical range':'Long, over 1:2.5',rOk,'1:1','1:3.5')}</div>
  <div class="facts">${F('Dose in',s.dose+'g')}${F('Yield out',s.yield+'g')}${F('Grinder clicks',s.clicks||'–')}${F('Flow',flow.toFixed(1)+' g/s')}</div>
  ${s.notes?`<div class="note" style="margin-top:16px;color:var(--mute);font-style:italic;font-size:13px">${esc(s.notes)}</div>`:''}
- <div class="vs">${vs}</div>`;
+ <div class="vs">${vs}</div>${nextHtml(s,b)}`;
 }
 function week(){
  const v=shots.filter(s=>s.at>=Date.now()-7*864e5);
@@ -804,12 +995,38 @@ $('im').onchange=e=>{
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')sync()});
 addEventListener('online',sync);
 
+document.querySelectorAll('input[name=dir]').forEach(r=>{r.checked=r.value===prefDir;r.onchange=()=>{prefDir=r.value;try{localStorage.setItem('espresso-dir',prefDir)}catch(e){}latest()}});
+/* first-run guide */
+const GUIDE=[
+ {i:'cup',t:'Welcome to Dialed',p:'Log every shot, see what changes the taste, and dial in faster.'},
+ {i:'bean',t:'Add your beans',p:'Start on the Beans tab. Save the roast date, bag size and flavour tags once, then just pick the bean each time.'},
+ {i:'plus',t:'Log a shot',p:'On the Log tab, enter dose, yield, time and grinder clicks, then tap how it tasted. Pour over recipes are there too.'},
+ {i:'chart',t:'See what to change',p:'Overview shows your latest shot against target ranges and suggests what to try next. Star your best shot to aim for it.'},
+ {i:'gear',t:'Keep it safe',p:'Your data is stored on this device. Connect GitHub from the gear icon to back it up and sync across devices.'}
+];
+let gi=0;
+function renderGuide(){
+ const g=GUIDE[gi],last=gi===GUIDE.length-1;
+ $('g-ico').innerHTML=icon(g.i);$('g-t').textContent=g.t;$('g-p').textContent=g.p;
+ $('g-dots').innerHTML=GUIDE.map((_,i)=>`<i class="${i===gi?'on':''}"></i>`).join('');
+ setBtn($('g-next'),last?'Get started':'Next',last?'check':'next');
+ $('g-skip').hidden=last;
+ const b=$('gbox');b.classList.remove('gstep');void b.offsetWidth;b.classList.add('gstep');
+}
+function openGuide(){gi=0;renderGuide();$('guide').hidden=false;document.body.style.overflow='hidden'}
+function closeGuide(){try{localStorage.setItem('espresso-guide','1')}catch(e){}$('guide').hidden=true;document.body.style.overflow=''}
+$('g-next').onclick=()=>{if(gi<GUIDE.length-1){gi++;renderGuide();buzz(8)}else closeGuide()};
+$('g-skip').onclick=closeGuide;
+$('guide-again').onclick=openGuide;
+addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('guide').hidden)closeGuide()});
 $('pref-cur').value=curr;
 $('pref-cur').oninput=e=>{curr=e.target.value;try{localStorage.setItem('espresso-cur',curr)}catch(x){}render()};
 setSync(cfg.token&&cfg.repo?'':'Saved on this device only');
 setBtn($('save'),'Log shot','plus');setBtn($('bn-save'),'Add bean','plus');
 render();prefill();renderRecipes();setMode(mode,true);
 show(beans.length?'log':'beans');
+let seen='';try{seen=localStorage.getItem('espresso-guide')||''}catch(e){}
+if(!seen&&!beans.length&&!shots.length)openGuide();
 sync();
 </script>
 </body>
