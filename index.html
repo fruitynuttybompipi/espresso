@@ -728,8 +728,8 @@ function renderTargets(b){
  if(!b||editShot){t.innerHTML='';return}
  const best=bestOf(b),good=goodOf(b.id);
  const row=(k,o,w)=>`<div class="tg"><div><span class="k">${k}</span><span class="v">${sumTxt(o)}</span></div><button class="q" data-use="${w}">Use</button></div>`;
- const same=best&&good&&sumTxt(best)===sumTxt(good);
- t.innerHTML=(best?row('Best shot',best,'best'):'')+(good&&!same?row('Average of '+good.n+' good '+(good.n===1?'shot':'shots'),good,'good'):'');
+ const same=best&&good&&sumTxt(best)===sumTxt(good),nm=esc(b.name);
+ t.innerHTML=(best?row('Best shot for '+nm,best,'best'):'')+(good&&!same?row('Average of '+good.n+' good '+(good.n===1?'shot':'shots')+' for '+nm,good,'good'):'');
 }
 $('targets').onclick=e=>{
  const bt=e.target.closest('[data-use]');if(!bt)return;
@@ -904,7 +904,7 @@ function suggest(s){
 function nextHtml(s,b){
  const sg=suggest(s),mv=sg.mv.map(m=>`<li>${esc(moveText(s,m))}</li>`).join('');
  const grind=sg.mv.some(m=>m.t==='grind'),can=b&&b.id&&!b.finished;
- return `<div class="next"><div class="nh">${icon('bulb')}Next shot</div><div class="nt">${esc(sg.title)}</div><p>${esc(sg.why)}</p>${mv?`<ul>${mv}</ul>`:''}${grind?`<div class="m" style="margin:-4px 0 12px">Assumes more clicks means a ${prefDir} grind. You can change this in settings.</div>`:''}${can?`<button class="main" data-try="1">${icon('plus')}Use these settings</button>`:''}</div>`;
+ return `<div class="next"><div class="nh">${icon('bulb')}Next shot for ${esc((b&&b.name)||'this bean')}</div><div class="nt">${esc(sg.title)}</div><p>${esc(sg.why)}</p>${mv?`<ul>${mv}</ul>`:''}${grind?`<div class="m" style="margin:-4px 0 12px">Assumes more clicks means a ${prefDir} grind. You can change this in settings.</div>`:''}${can?`<button class="main" data-try="1">${icon('plus')}Use these settings</button>`:''}</div>`;
 }
 function tryNext(){
  const s=[...shots].sort((a,b)=>b.at-a.at)[0];if(!s)return;
