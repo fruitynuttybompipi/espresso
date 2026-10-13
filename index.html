@@ -3,9 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Dialed</title>
-<meta name="theme-color" content="#eeeeea" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#141311" media="(prefers-color-scheme: dark)">
+<title>Dialed: Espresso &amp; Pour Over Coffee Log</title>
+<meta name="description" content="A simple coffee log to dial in espresso and pour over. Track beans, dose, yield, time and grinder clicks, see charts, and get next-shot suggestions.">
+<meta name="application-name" content="Dialed">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Dialed">
+<meta property="og:title" content="Dialed: Espresso &amp; Pour Over Coffee Log">
+<meta property="og:description" content="A simple coffee log to dial in espresso and pour over. Track beans, dose, yield, time and grinder clicks, see charts, and get next-shot suggestions.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Dialed: Espresso &amp; Pour Over Coffee Log">
+<meta name="twitter:description" content="A simple coffee log to dial in espresso and pour over. Track beans, dose, yield, time and grinder clicks, see charts, and get next-shot suggestions.">
+<meta name="theme-color" id="tc" content="#141311">
+<script>try{var t=localStorage.getItem('espresso-theme')==='light'?'light':'dark';document.documentElement.dataset.theme=t;document.getElementById('tc').content=t==='dark'?'#141311':'#eeeeea'}catch(e){document.documentElement.dataset.theme='dark'}</script>
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Dialed">
@@ -290,6 +299,10 @@ input,select,textarea{font-size:16px}
  .latest .top .acts{width:100%}
  .latest .top .acts button{flex:1 1 0;border:1px solid var(--line)}
 }
+
+:root{color-scheme:light}
+:root[data-theme="dark"]{color-scheme:dark}
+.switch[data-m=light]::before{transform:translateX(100%)}
 </style>
 </head>
 <body>
@@ -410,7 +423,8 @@ input,select,textarea{font-size:16px}
 </section>
 <section>
 <h2>Preferences</h2>
-<div class="card"><div class="grid"><div class="f span2"><label class="l" for="pref-cur">Currency symbol</label><input type="text" id="pref-cur" placeholder="$" maxlength="4" autocomplete="off"></div></div><div class="f span4" style="margin-top:20px"><span class="l">Grinder direction, used for next-shot suggestions</span>
+<div class="card"><div class="f" style="margin-bottom:24px"><span class="l">Appearance</span><div class="switch" id="theme" data-m="dark" role="group" aria-label="Appearance" style="margin:8px 0 0"><button data-t="dark" aria-pressed="true">Dark</button><button data-t="light" aria-pressed="false">Light</button></div></div>
+<div class="grid"><div class="f span2"><label class="l" for="pref-cur">Currency symbol</label><input type="text" id="pref-cur" placeholder="$" maxlength="4" autocomplete="off"></div></div><div class="f span4" style="margin-top:20px"><span class="l">Grinder direction, used for next-shot suggestions</span>
 <div class="seg"><label><input type="radio" name="dir" value="coarser"><span>More clicks = coarser</span></label><label><input type="radio" name="dir" value="finer"><span>More clicks = finer</span></label></div></div>
 <p class="help">Currency is used for cost per shot. Preferences are saved on this device only.</p>
 <div class="acts"><button class="q" id="guide-again" style="border:1px solid var(--line)">Show the quick guide again</button></div></div>
@@ -444,6 +458,8 @@ const IC={
  chart:'<path d="M5 20V10M12 20V4M19 20v-7"/>',
  plus:'<path d="M12 5v14M5 12h14"/>',
  next:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+ moon:'<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>',
+ sun:'<circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6L7 7M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4"/>',
  star:'<path d="M12 3.6l2.5 5.2 5.7.8-4.1 4 1 5.7-5.1-2.7-5.1 2.7 1-5.7-4.1-4 5.7-.8z"/>',
  bulb:'<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/>',
  gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
@@ -996,6 +1012,19 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 addEventListener('online',sync);
 
 document.querySelectorAll('input[name=dir]').forEach(r=>{r.checked=r.value===prefDir;r.onchange=()=>{prefDir=r.value;try{localStorage.setItem('espresso-dir',prefDir)}catch(e){}latest()}});
+/* appearance */
+let theme=document.documentElement.dataset.theme==='light'?'light':'dark';
+function setTheme(t){
+ theme=t==='light'?'light':'dark';
+ try{localStorage.setItem('espresso-theme',theme)}catch(e){}
+ document.documentElement.dataset.theme=theme;
+ $('tc').content=theme==='dark'?'#141311':'#eeeeea';
+ $('theme').dataset.m=theme;
+ [...$('theme').children].forEach(b=>b.setAttribute('aria-pressed',b.dataset.t===theme));
+}
+[...$('theme').children].forEach(b=>{b.innerHTML=icon(b.dataset.t==='dark'?'moon':'sun')+b.textContent});
+$('theme').onclick=e=>{const b=e.target.closest('button');if(b&&b.dataset.t!==theme){buzz(8);setTheme(b.dataset.t)}};
+setTheme(theme);
 /* first-run guide */
 const GUIDE=[
  {i:'cup',t:'Welcome to Dialed',p:'Log every shot, see what changes the taste, and dial in faster.'},
