@@ -305,6 +305,24 @@ input,select,textarea{font-size:16px}
 .switch[data-m=light]::before{transform:translateX(100%)}
 html,body{touch-action:pan-y;overscroll-behavior-x:none}
 html,body{overflow-x:hidden;overflow-x:clip;max-width:100%}
+
+/* weight steppers and quick picks */
+.half{grid-column:span 2}
+@media(max-width:560px){.half{grid-column:span 1}}
+.stp{display:flex;align-items:center;gap:8px}
+.stp input[type=number]{flex:1;min-width:0;text-align:center;font:400 26px/1.2 Georgia,serif;font-variant-numeric:tabular-nums;border-bottom:0;padding:6px 0}
+.stp input:focus{outline:0}
+.stp:focus-within input{color:var(--btn)}
+.sb{flex:none;width:44px;height:44px;min-height:44px;padding:0;border-radius:50%;background:var(--bg);color:var(--ink);border:1px solid var(--line);font-weight:400;touch-action:none;-webkit-user-select:none;user-select:none;transition:background-color .15s,color .15s,border-color .15s,transform .12s}
+.sb .i{width:18px;height:18px}
+.sb:hover{border-color:var(--btn)}
+.sb:active{background:var(--btn);border-color:var(--btn);color:#fff;transform:scale(.9)}
+@keyframes numpop{50%{transform:scale(1.12)}}
+.stp input.pop{animation:numpop .18s ease-out}
+.qp{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.qc{min-height:36px;padding:6px 12px;font-size:13px;font-weight:400;background:transparent;color:var(--mute);border:1px solid var(--line);border-radius:99px}
+.qc[aria-pressed=true]{background:var(--btn);border-color:var(--btn);color:#fff;font-weight:600}
+.qc:disabled{opacity:.4;cursor:default}
 </style>
 </head>
 <body>
@@ -329,10 +347,10 @@ html,body{overflow-x:hidden;overflow-x:clip;max-width:100%}
 <div class="grid">
 <div class="info span4" id="editnote" hidden></div>
 <div class="f span4"><label class="l" for="sel">Bean</label><select id="sel" class="pick"></select><div class="info" id="beaninfo"></div><div id="targets"></div></div>
-<div class="f"><label class="l" for="dose">Dose in (g)</label><input type="number" id="dose" step="0.1" inputmode="decimal" placeholder="18"></div>
-<div class="f"><label class="l" for="yield">Yield out (g)</label><input type="number" id="yield" step="0.1" inputmode="decimal" placeholder="36"></div>
-<div class="f"><label class="l" for="time">Time (s)</label><input type="number" id="time" step="0.5" inputmode="decimal" placeholder="28"></div>
-<div class="f"><label class="l" for="clicks">Grinder clicks</label><input type="number" id="clicks" step="0.5" inputmode="decimal" placeholder="14"></div>
+<div class="f span2"><label class="l" for="dose">Dose in (g)</label><input type="number" id="dose" step="0.1" inputmode="decimal" placeholder="18"></div>
+<div class="f span2"><label class="l" for="yield">Yield out (g)</label><input type="number" id="yield" step="0.1" inputmode="decimal" placeholder="36"></div>
+<div class="f half"><label class="l" for="time">Time (s)</label><input type="number" id="time" step="0.5" inputmode="decimal" placeholder="28"></div>
+<div class="f half"><label class="l" for="clicks">Grinder clicks</label><input type="number" id="clicks" step="0.5" inputmode="decimal" placeholder="14"></div>
 <div class="f span4"><span class="l">Drink</span>
 <div class="seg"><label><input type="radio" name="drink" value="Black" checked><span>Black</span></label><label><input type="radio" name="drink" value="White"><span>White</span></label></div></div>
 <div class="f span4"><span class="l">Taste</span>
@@ -392,8 +410,8 @@ html,body{overflow-x:hidden;overflow-x:clip;max-width:100%}
 <div class="f span2"><label class="l" for="bn-name">Bean name</label><input type="text" id="bn-name" placeholder="Ethiopia Guji, Origin Roasters" autocomplete="off"></div>
 <div class="f span2"><label class="l" for="bn-date">Date of purchase</label><input type="date" id="bn-date"></div>
 <div class="f span2"><label class="l" for="bn-roasted">Roast date (optional)</label><input type="date" id="bn-roasted"></div>
-<div class="f"><label class="l" for="bn-weight">Bag weight (g)</label><input type="number" id="bn-weight" step="1" inputmode="decimal" placeholder="250"></div>
-<div class="f"><label class="l" for="bn-price">Bag price</label><input type="number" id="bn-price" step="0.01" inputmode="decimal" placeholder="68"></div>
+<div class="f span2"><label class="l" for="bn-weight">Bag weight (g)</label><input type="number" id="bn-weight" step="1" inputmode="decimal" placeholder="250"></div>
+<div class="f span2"><label class="l" for="bn-price">Bag price</label><input type="number" id="bn-price" step="0.01" inputmode="decimal" placeholder="68"></div>
 <div class="f span2" id="bn-fin-wrap" hidden><label class="l" for="bn-finished">Finished on (clear to reopen)</label><input type="date" id="bn-finished"></div>
 <div class="f span4"><span class="l">Roast</span>
 <div class="seg"><label><input type="radio" name="roast" value="Light"><span>Light</span></label><label><input type="radio" name="roast" value="Medium" checked><span>Medium</span></label><label><input type="radio" name="roast" value="Dark"><span>Dark</span></label></div></div>
@@ -1014,6 +1032,71 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 addEventListener('online',sync);
 
 document.querySelectorAll('input[name=dir]').forEach(r=>{r.checked=r.value===prefDir;r.onchange=()=>{prefDir=r.value;try{localStorage.setItem('espresso-dir',prefDir)}catch(e){}latest()}});
+/* weight steppers and quick picks */
+IC.minus='<path d="M5 12h14"/>';
+const rd=v=>Math.round(v*10)/10;
+const WT=[
+ {id:'dose',step:.1,fast:.5,def:18,max:60,dec:1,chips:[16,17,18,19,20]},
+ {id:'yield',step:.5,fast:2.5,def:36,max:200,dec:1,ratio:[1.5,2,2.5]},
+ {id:'bn-weight',step:10,fast:50,def:250,max:5000,dec:0,chips:[100,250,500,1000]}
+];
+function fire(inp){
+ inp.dispatchEvent(new Event('input',{bubbles:true}));
+ inp.classList.remove('pop');void inp.offsetWidth;inp.classList.add('pop');
+}
+function setVal(w,v){
+ const inp=$(w.id);v=Math.min(w.max,Math.max(0,v));
+ inp.value=w.dec?v.toFixed(1):String(Math.round(v));fire(inp);
+}
+function stepOf(w,dir,fast){
+ const v=parseFloat($(w.id).value);
+ if(!isFinite(v)){
+  let d0=w.def;
+  if(w.id==='yield'){const d=parseFloat($('dose').value);if(d>0)d0=rd(d*2)}
+  return setVal(w,d0);
+ }
+ setVal(w,rd(v+dir*(fast?w.fast:w.step)));
+}
+function hold(b,w,dir){
+ let t1,t2,n=0;
+ const stop=()=>{clearTimeout(t1);clearInterval(t2)};
+ b.addEventListener('pointerdown',e=>{e.preventDefault();stop();n=0;stepOf(w,dir,false);buzz(5);t1=setTimeout(()=>{t2=setInterval(()=>{n++;stepOf(w,dir,n>10);buzz(3)},80)},380)});
+ ['pointerup','pointerleave','pointercancel'].forEach(t=>b.addEventListener(t,stop));
+ b.addEventListener('contextmenu',e=>e.preventDefault());
+ b.addEventListener('click',e=>{if(e.detail===0)stepOf(w,dir,false)});
+}
+WT.forEach(w=>{
+ const inp=$(w.id),f=inp.parentNode,wrap=document.createElement('div');
+ wrap.className='stp';f.insertBefore(wrap,inp);
+ const mk=(dir,ic,label)=>{const b=document.createElement('button');b.type='button';b.className='sb';b.setAttribute('aria-label',label);b.innerHTML=icon(ic);hold(b,w,dir);return b};
+ wrap.append(mk(-1,'minus','Decrease'),inp,mk(1,'plus','Increase'));
+ const box=document.createElement('div');box.className='qp';
+ box.innerHTML=(w.chips?w.chips.map(v=>`<button type="button" class="qc" data-v="${v}" aria-pressed="false">${v}g</button>`):w.ratio.map(r=>`<button type="button" class="qc" data-r="${r}" aria-pressed="false">1:${r}</button>`)).join('');
+ box.onclick=e=>{
+  const c=e.target.closest('.qc');if(!c||c.disabled)return;
+  let v;
+  if(c.dataset.r){const d=parseFloat($('dose').value);if(!(d>0))return;v=rd(d*parseFloat(c.dataset.r))}
+  else v=parseFloat(c.dataset.v);
+  setVal(w,v);buzz(8);
+ };
+ f.appendChild(box);
+});
+function syncChips(){
+ const d=parseFloat($('dose').value);
+ WT.forEach(w=>{
+  const v=parseFloat($(w.id).value),box=$(w.id).closest('.f').querySelector('.qp');
+  box.querySelectorAll('.qc').forEach(c=>{
+   if(c.dataset.r){
+    const has=d>0,g=has?rd(d*parseFloat(c.dataset.r)):0,txt=has?'1:'+c.dataset.r+' \u00b7 '+(+g.toFixed(1))+'g':'1:'+c.dataset.r;
+    c.disabled=!has;c.title=has?'':'Set the dose first';
+    if(c.textContent!==txt)c.textContent=txt;
+    c.setAttribute('aria-pressed',String(has&&isFinite(v)&&Math.abs(v-g)<.06));
+   }else c.setAttribute('aria-pressed',String(isFinite(v)&&Math.abs(v-parseFloat(c.dataset.v))<.001));
+  });
+ });
+}
+['click','input','change'].forEach(t=>document.addEventListener(t,()=>setTimeout(syncChips,0),true));
+syncChips();
 ['gesturestart','gesturechange','gestureend'].forEach(t=>document.addEventListener(t,e=>e.preventDefault()));
 /* appearance */
 let theme=document.documentElement.dataset.theme==='light'?'light':'dark';
