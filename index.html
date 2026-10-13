@@ -2,17 +2,17 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Dialed: Espresso &amp; Pour Over Coffee Log</title>
-<meta name="description" content="A simple coffee log to dial in espresso and pour over. Track beans, dose, yield, time and grinder clicks, see charts, and get next-shot suggestions.">
+<meta name="description" content="Dial in every cup. Log espresso shots, track beans and get next-shot suggestions.">
 <meta name="application-name" content="Dialed">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Dialed">
 <meta property="og:title" content="Dialed: Espresso &amp; Pour Over Coffee Log">
-<meta property="og:description" content="A simple coffee log to dial in espresso and pour over. Track beans, dose, yield, time and grinder clicks, see charts, and get next-shot suggestions.">
+<meta property="og:description" content="Dial in every cup. Log espresso shots, track beans and get next-shot suggestions.">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Dialed: Espresso &amp; Pour Over Coffee Log">
-<meta name="twitter:description" content="A simple coffee log to dial in espresso and pour over. Track beans, dose, yield, time and grinder clicks, see charts, and get next-shot suggestions.">
+<meta name="twitter:description" content="Dial in every cup. Log espresso shots, track beans and get next-shot suggestions.">
 <meta name="theme-color" id="tc" content="#141311">
 <script>try{var t=localStorage.getItem('espresso-theme')==='light'?'light':'dark';document.documentElement.dataset.theme=t;document.getElementById('tc').content=t==='dark'?'#141311':'#eeeeea'}catch(e){document.documentElement.dataset.theme='dark'}</script>
 <meta name="mobile-web-app-capable" content="yes">
@@ -232,7 +232,7 @@ html{background:var(--bg);-webkit-tap-highlight-color:transparent;-webkit-text-s
 body{touch-action:manipulation;overscroll-behavior-y:contain}
 button,.nav,.seg span,.tabs,h1,h2,summary{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 input,select,textarea{font-size:16px}
-@media (max-width:640px){
+@media (max-width:820px),(hover:none) and (pointer:coarse){
  :root{--navh:68px}
  body{padding-bottom:calc(var(--navh) + env(safe-area-inset-bottom,0px))}
  main{padding-top:0;padding-bottom:28px}
@@ -303,6 +303,8 @@ input,select,textarea{font-size:16px}
 :root{color-scheme:light}
 :root[data-theme="dark"]{color-scheme:dark}
 .switch[data-m=light]::before{transform:translateX(100%)}
+html,body{touch-action:pan-y;overscroll-behavior-x:none}
+html,body{overflow-x:hidden;overflow-x:clip;max-width:100%}
 </style>
 </head>
 <body>
@@ -1012,6 +1014,7 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 addEventListener('online',sync);
 
 document.querySelectorAll('input[name=dir]').forEach(r=>{r.checked=r.value===prefDir;r.onchange=()=>{prefDir=r.value;try{localStorage.setItem('espresso-dir',prefDir)}catch(e){}latest()}});
+['gesturestart','gesturechange','gestureend'].forEach(t=>document.addEventListener(t,e=>e.preventDefault()));
 /* appearance */
 let theme=document.documentElement.dataset.theme==='light'?'light':'dark';
 function setTheme(t){
