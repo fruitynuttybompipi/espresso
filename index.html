@@ -323,6 +323,12 @@ html,body{overflow-x:hidden;overflow-x:clip;max-width:100%}
 .qc{min-height:36px;padding:6px 12px;font-size:13px;font-weight:400;background:transparent;color:var(--mute);border:1px solid var(--line);border-radius:99px}
 .qc[aria-pressed=true]{background:var(--btn);border-color:var(--btn);color:#fff;font-weight:600}
 .qc:disabled{opacity:.4;cursor:default}
+
+.lnkbtn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:10px 20px;border-radius:99px;background:var(--btn);color:#fff;font-weight:600;text-decoration:none;transition:transform .12s,opacity .2s}
+.lnkbtn:active{transform:scale(.96)}
+.lnkbtn:focus-visible,.glink:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.glink{display:inline-flex;align-items:center;gap:7px;margin-top:22px;color:var(--btn);font-size:14px;font-weight:600;text-decoration:none;padding:8px 4px}
+.glink:hover,.glink:active{text-decoration:underline}
 </style>
 </head>
 <body>
@@ -447,7 +453,12 @@ html,body{overflow-x:hidden;overflow-x:clip;max-width:100%}
 <div class="grid"><div class="f span2"><label class="l" for="pref-cur">Currency symbol</label><input type="text" id="pref-cur" placeholder="$" maxlength="4" autocomplete="off"></div></div><div class="f span4" style="margin-top:20px"><span class="l">Grinder direction, used for next-shot suggestions</span>
 <div class="seg"><label><input type="radio" name="dir" value="coarser"><span>More clicks = coarser</span></label><label><input type="radio" name="dir" value="finer"><span>More clicks = finer</span></label></div></div>
 <p class="help">Currency is used for cost per shot. Preferences are saved on this device only.</p>
-<div class="acts"><button class="q" id="guide-again" style="border:1px solid var(--line)">Show the quick guide again</button></div></div>
+</div>
+</section>
+<section>
+<h2>Help</h2>
+<div class="card"><p class="help" style="margin-top:0">New to Dialed? The how-to guide covers beans, logging shots, pour over recipes, charts, the dialing-in cheat sheet and GitHub sync.</p>
+<div class="acts"><a class="lnkbtn" id="pdf-link" href="Dialed-how-to-guide.pdf" target="_blank" rel="noopener"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5M9 13h7M9 17h7"/></svg>How-to guide (PDF)</a><button class="q" id="guide-again" style="border:1px solid var(--line)">Show the quick guide again</button></div></div>
 </section>
 <section>
 <h2>Backup</h2>
@@ -457,7 +468,7 @@ html,body{overflow-x:hidden;overflow-x:clip;max-width:100%}
 </main>
 <footer class="foot"><span id="sync"></span></footer>
 <div id="toast" role="status" aria-live="polite"></div>
-<div id="guide" hidden role="dialog" aria-modal="true" aria-label="Quick guide"><div class="gbox" id="gbox"><div class="gico" id="g-ico"></div><h2 id="g-t"></h2><p id="g-p"></p><div class="gdots" id="g-dots"></div><div class="gacts"><button class="q" id="g-skip">Skip</button><button id="g-next">Next</button></div></div></div>
+<div id="guide" hidden role="dialog" aria-modal="true" aria-label="Quick guide"><div class="gbox" id="gbox"><div class="gico" id="g-ico"></div><h2 id="g-t"></h2><p id="g-p"></p><div class="gdots" id="g-dots"></div><div class="gacts"><button class="q" id="g-skip">Skip</button><button id="g-next">Next</button></div><a class="glink" id="g-pdf" href="Dialed-how-to-guide.pdf" target="_blank" rel="noopener"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5M9 13h7M9 17h7"/></svg>Read the full how-to guide (PDF)</a></div></div>
 
 <script>
 const KEY='espresso-log-v2',OLDKEY='espresso-log-v1',CK='espresso-gh-v1',SELK='espresso-sel';
@@ -1117,7 +1128,7 @@ const GUIDE=[
  {i:'bean',t:'Add your beans',p:'Start on the Beans tab. Save the roast date, bag size and flavour tags once, then just pick the bean each time.'},
  {i:'plus',t:'Log a shot',p:'On the Log tab, enter dose, yield, time and grinder clicks, then tap how it tasted. Pour over recipes are there too.'},
  {i:'chart',t:'See what to change',p:'Overview shows your latest shot against target ranges and suggests what to try next. Star your best shot to aim for it.'},
- {i:'gear',t:'Keep it safe',p:'Your data is stored on this device. Connect GitHub from the gear icon to back it up and sync across devices.'}
+ {i:'gear',t:'Keep it safe',p:'Your data is stored on this device. Connect GitHub from the gear icon to back it up and sync across devices. The full how-to guide is linked below and in settings.'}
 ];
 let gi=0;
 function renderGuide(){
