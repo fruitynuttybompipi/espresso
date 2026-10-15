@@ -33,6 +33,7 @@ It is a single static page with no build step and no dependencies, so it runs an
 
 **Pour over**
 - Recipe cards for Tetsu Kasuya 4:6, James Hoffmann V60 and a Scott Rao-style V60, each with specs, a step table and technique notes
+- Recipe scaler: set the coffee or water amount and every pour, total and spec recalculates at the same ratio
 
 **App feel**
 - Phone-first layout with a fixed bottom tab bar, no zoom and no sideways scrolling
