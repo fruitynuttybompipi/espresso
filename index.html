@@ -206,6 +206,7 @@ button:active{transform:scale(.96)}
 body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
 main{width:100%;flex:1 0 auto}
 .foot{padding:8px 20px 28px;text-align:center;font-size:12px;color:var(--mute)}
+.credit{margin-top:10px;font-size:11px;opacity:.8;line-height:1.6}
 
 :root{--dil:#5f86ad}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--dil:#86abd0}}
@@ -282,6 +283,8 @@ circle.sel{stroke:var(--btn)!important;stroke-width:3!important;opacity:1;transf
 .f.need{animation:shake .4s}
 @keyframes shake{20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
 .fun{gap:22px 32px}
+button.q,.row .acts button.q{white-space:nowrap}
+.row .acts button.q{flex:1 1 auto}
 .fixbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:10px 14px;margin-bottom:8px;border:1px dashed var(--btn);border-radius:12px;font-size:13px;color:var(--mute)}
 .fixbar[hidden]{display:none}
 .fixbar.in{animation:rise .4s ease both}
@@ -502,7 +505,7 @@ html,body{overflow-x:hidden;overflow-x:clip;max-width:100%}
 </section>
 </div>
 </main>
-<footer class="foot"><span id="sync"></span></footer>
+<footer class="foot"><span id="sync"></span><div class="credit">Vibe Coded by Claude &amp; CC. All Rights Reserved &reg; 2026.<br><span id="upd"></span></div></footer>
 <div id="toast" role="status" aria-live="polite"></div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-label="Quick guide"><div class="gbox" id="gbox"><div class="gico" id="g-ico"></div><h2 id="g-t"></h2><p id="g-p"></p><div class="gdots" id="g-dots"></div><div class="gacts"><button class="q" id="g-skip">Skip</button><button id="g-next">Next</button></div><a class="glink" id="g-pdf" href="Dialed-how-to-guide.pdf" target="_blank" rel="noopener"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5M9 13h7M9 17h7"/></svg>Read the full how-to guide (PDF)</a></div></div>
 
@@ -1302,6 +1305,9 @@ show(beans.length?'log':'beans');
 let seen='';try{seen=localStorage.getItem('espresso-guide')||''}catch(e){}
 if(!seen&&!beans.length&&!shots.length)openGuide();
 sync();
+// the server's Last-Modified header = when the file was last uploaded; shows device time
+(()=>{const d=new Date(document.lastModified);if(isNaN(d))return;const p=n=>String(n).padStart(2,'0');
+$('upd').textContent='Last updated on '+p(d.getHours())+':'+p(d.getMinutes())+' '+d.getDate()+' '+d.toLocaleDateString('en-GB',{month:'short'})+' '+d.getFullYear()})();
 </script>
 </body>
 </html>
