@@ -267,6 +267,13 @@ input,select,textarea{font-size:16px}
 .tg button{border:1px solid var(--line);flex:none}
 .q.on{color:var(--btn)}
 .q.on .i{fill:currentColor}
+.dk{display:inline-flex!important;align-items:center;gap:6px}
+.dk b{font-weight:inherit}
+.dk .i{width:15px;height:15px}
+.lchips span.dk,.row .d span.dk{display:inline-flex;align-items:center;gap:5px}
+.card svg circle[data-sid]{cursor:pointer}
+circle.sel{stroke:var(--btn)!important;stroke-width:3!important}
+#dotinfo .row{border-bottom:0;border-top:1px solid var(--line);margin-top:12px;padding-bottom:0}
 .bestchip{color:var(--btn);font-weight:600}
 .lchips .bestchip{background:transparent;border:1px solid var(--btn);font-weight:600}
 .more{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 0 0;color:var(--mute);font-size:13px}
@@ -362,7 +369,7 @@ html,body{overflow-x:hidden;overflow-x:clip;max-width:100%}
 <div class="f half"><label class="l" for="time">Time (s)</label><input type="number" id="time" step="0.5" inputmode="decimal" placeholder="28"></div>
 <div class="f half"><label class="l" for="clicks">Grinder clicks</label><input type="number" id="clicks" step="0.5" inputmode="decimal" placeholder="14"></div>
 <div class="f span4"><span class="l">Drink</span>
-<div class="seg"><label><input type="radio" name="drink" value="Black" checked><span>Black</span></label><label><input type="radio" name="drink" value="White"><span>White</span></label></div></div>
+<div class="seg"><label><input type="radio" name="drink" value="Black" checked><span class="dk" data-d="black"><b>Black</b></span></label><label><input type="radio" name="drink" value="White"><span class="dk" data-d="white"><b>White</b></span></label></div></div>
 <div class="f span4"><span class="l">Taste</span>
 <div class="seg"><label><input type="radio" name="taste" value="Sour"><span>Sour</span></label><label><input type="radio" name="taste" value="Balanced"><span>Balanced</span></label><label><input type="radio" name="taste" value="Bitter"><span>Bitter</span></label><label><input type="radio" name="taste" value="Diluted"><span>Diluted</span></label></div></div>
 <div class="f span4"><span class="l">Rating (optional)</span>
@@ -402,7 +409,7 @@ html,body{overflow-x:hidden;overflow-x:clip;max-width:100%}
 <select id="f-rating" aria-label="Rating"><option value="0">Any rating</option><option value="3">3 and up</option><option value="4">4 and up</option><option value="5">5 only</option></select>
 </div>
 <div class="stats" id="stats"></div>
-<div class="card"><div id="chart"></div><div class="info" id="charthint" style="margin-top:10px"></div>
+<div class="card"><div id="chart"></div><div class="info" id="charthint" style="margin-top:10px"></div><div id="dotinfo"></div>
 <div class="legend"><span><i style="background:var(--sour)"></i>Sour</span><span><i style="background:var(--bal)"></i>Balanced</span><span><i style="background:var(--bit)"></i>Bitter</span><span><i style="background:var(--dil)"></i>Diluted</span><span><i style="background:var(--band);width:18px;border-radius:3px"></i>Target range</span></div></div>
 </section>
 
@@ -501,6 +508,8 @@ const IC={
  check:'<path d="M5 12.5l4.5 4.5L19 7"/>',
  done:'<circle cx="12" cy="12" r="8.5"/><path d="M8.2 12.4l2.5 2.5 5-5.3"/>',
  edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',
+ black:'<path d="M5 9h11v4.5a4.5 4.5 0 0 1-4.5 4.5h-2A4.5 4.5 0 0 1 5 13.5z" fill="currentColor"/><path d="M16 10.5h1.5a2.2 2.2 0 0 1 0 4.4H16M8 3.5v2.5M11.5 3.5v2.5"/>',
+ white:'<path d="M5 9h11v4.5a4.5 4.5 0 0 1-4.5 4.5h-2A4.5 4.5 0 0 1 5 13.5z"/><path d="M5.2 12h10.6" /><path d="M16 10.5h1.5a2.2 2.2 0 0 1 0 4.4H16M8 3.5v2.5M11.5 3.5v2.5"/>',
  drip:'<path d="M4.5 5h15L14 12.5V17h-4v-4.5z"/><path d="M7.5 21h9"/>',
  trash:'<path d="M5 7h14M10 7V4.5h4V7M7 7l.9 12.5h8.2L17 7M10.2 11v5.5M13.8 11v5.5"/>'
 };
@@ -544,6 +553,11 @@ let prefDir='coarser';try{prefDir=localStorage.getItem('espresso-dir')==='finer'
 let curr='$';try{curr=localStorage.getItem('espresso-cur')??'$'}catch(e){}
 const money=v=>curr+v.toFixed(2);
 const cap=t=>t.charAt(0).toUpperCase()+t.slice(1);
+document.querySelectorAll('.dk[data-d]').forEach(e=>e.insertAdjacentHTML('afterbegin',icon(e.dataset.d)));
+const rt=v=>'1:'+Math.round(v),ri=v=>Math.round(v);
+const agoTxt=n=>n==null?'':n<=0?'today':n===1?'1 day ago':n+' days ago';
+const roastAgo=(b,date)=>{const r=restOf(b,date);return r.n==null?'':(r.w==='roast'?'Roasted ':'Purchased ')+agoTxt(r.n)};
+const drinkPill=d=>`<span class="dk">${icon(d==='White'?'white':'black')}${esc(d)}</span>`;
 const restOf=(b,date)=>b&&b.roasted?{n:days(b.roasted,date),w:'roast'}:{n:b&&b.bought?days(b.bought,date):null,w:'purchase'};
 const usedOf=id=>shots.filter(x=>x.beanId===id).reduce((a,x)=>a+x.dose,0);
 function bagOf(b){
@@ -699,9 +713,9 @@ function renderBeans(){
 /* log */
 const M={
  time:{name:'Time',get:s=>s.time,band:[25,30],fmt:v=>v.toFixed(0)+'s'},
- ratio:{name:'Ratio',get:s=>s.yield/s.dose,band:[1.8,2.5],fmt:v=>'1:'+v.toFixed(1)},
- yield:{name:'Yield',get:s=>s.yield,band:null,fmt:v=>v.toFixed(1)+'g'},
- clicks:{name:'Clicks',get:s=>s.clicks,band:null,fmt:v=>v},
+ ratio:{name:'Ratio',get:s=>s.yield/s.dose,band:[1.8,2.5],fmt:v=>rt(v)},
+ yield:{name:'Yield',get:s=>s.yield,band:null,fmt:v=>ri(v)+'g'},
+ clicks:{name:'Clicks',get:s=>s.clicks,band:null,fmt:v=>ri(v)},
  spot:{name:'Sweet spot'}
 };
 const tasteCol={Sour:'var(--sour)',Balanced:'var(--bal)',Bitter:'var(--bit)',Diluted:'var(--dil)'};
@@ -734,7 +748,7 @@ function renderSel(){
  $('nobeans-msg').textContent=beans.length?'All your beans are finished. Add a new bean to log more shots.':'Create a bean profile first, then pick it here each time you pull a shot.';
  $('nobeans').hidden=av.length>0;$('logform').hidden=!av.length;
  const b=beanOf(cur),g=bagOf(b);
- $('beaninfo').innerHTML=b?esc(b.roast)+' roast, '+(b.roasted?'roasted '+esc(b.roasted)+', ':'')+'purchased '+esc(b.bought)+(b.tags&&b.tags.length?'<br>'+esc(b.tags.map(cap).join(', ')):'')+(g?`<br><span class="${g.st==='ok'?'':'low'}">${esc(bagTxt(b))}</span>`:''):'';
+ $('beaninfo').innerHTML=b?esc(roastAgo(b,today()))+(b.tags&&b.tags.length?'<br>'+esc(b.tags.map(cap).join(', ')):'')+(g?`<br><span class="${g.st==='ok'?'':'low'}">${esc(bagTxt(b))}</span>`:''):'';
  renderTargets(b);
  live();
 }
@@ -792,6 +806,13 @@ $('latest').onclick=e=>{
  if(t.dataset.best)return toggleBest(t.dataset.best);
  if(t.dataset.try)return tryNext();
 };
+$('chart').onclick=e=>{
+ const c=e.target.closest('circle[data-sid]');if(!c)return;
+ const id=c.dataset.sid;pick=pick===id?null:id;pickShow();
+ $('chart').querySelectorAll('circle.sel').forEach(x=>x.classList.remove('sel'));
+ if(pick)c.classList.add('sel');
+};
+$('dotinfo').onclick=e=>$('list').onclick(e);
 $('list').onclick=e=>{
  const t=e.target.closest('button');if(!t)return;
  if(t.id==='more'){lim+=30;list();return}
@@ -814,7 +835,7 @@ function stats(){
  const v=view_(),n=v.length;
  if(!n){$('stats').innerHTML='';return}
  const avg=f=>v.reduce((a,s)=>a+f(s),0)/n;
- $('stats').innerHTML=`<div><b>${n}</b><span>shots</span></div><div><b>1:${avg(s=>s.yield/s.dose).toFixed(1)}</b><span>average ratio</span></div><div><b>${avg(s=>s.time).toFixed(0)}s</b><span>average time</span></div><div><b>${avg(s=>s.yield/s.time).toFixed(1)}</b><span>average g/s</span></div>`;
+ $('stats').innerHTML=`<div><b>${n}</b><span>shots</span></div><div><b>${rt(avg(s=>s.yield/s.dose))}</b><span>average ratio</span></div><div><b>${avg(s=>s.time).toFixed(0)}s</b><span>average time</span></div><div><b>${avg(s=>s.yield/s.time).toFixed(1)}</b><span>average g/s</span></div>`;
 }
 function scatter(v,an){
  v=v.filter(s=>s.clicks>0);
@@ -830,13 +851,20 @@ function scatter(v,an){
  const X=x=>pl+(x-xl)/(xh-xl)*(W-pl-pr),Y=y=>pt+(yh-y)/(yh-yl)*(H-pt-pb);
  let g='';
  for(let k=0;k<=3;k++){const y=yl+(yh-yl)*k/3,py=Y(y);g+=`<line x1="${pl}" x2="${W-pr}" y1="${py}" y2="${py}" stroke="var(--line)"/><text x="${pl-8}" y="${py+4}" text-anchor="end">${Math.round(y)}</text>`}
- for(let k=0;k<=4;k++){const x=xl+(xh-xl)*k/4;g+=`<text x="${X(x)}" y="${H-8}" text-anchor="middle">${Math.round(x*2)/2}</text>`}
+ for(let k=0;k<=4;k++){const x=xl+(xh-xl)*k/4;g+=`<text x="${X(x)}" y="${H-8}" text-anchor="middle">${Math.round(x)}</text>`}
  const band=`<rect x="${pl}" width="${W-pl-pr}" y="${Y(30)}" height="${Y(25)-Y(30)}" fill="var(--band)" rx="3"/>`;
  const ring=bOk?`<g><circle cx="${X(bs.clicks)}" cy="${Y(bs.time)}" r="13" fill="none" stroke="var(--btn)" stroke-width="2" stroke-dasharray="4 3"/><text x="${X(bs.clicks)}" y="${Y(bs.time)-18}" text-anchor="middle" style="fill:var(--btn);font-weight:600">Best</text></g>`:'';
- const dots=v.map((s,i)=>`<circle class="${an?'dotin':''}" style="animation-delay:${Math.min(i*.04,.8)}s" cx="${X(s.clicks)}" cy="${Y(s.time)}" r="6.5" fill="${tasteCol[s.taste]||'var(--bg)'}" fill-opacity=".9" stroke="var(--ink)" stroke-width="1.5"><title>${esc(bname(s.beanId))}: ${s.clicks} clicks, ${s.time}s${s.taste?' ('+s.taste+')':''}${s.rating?', '+s.rating+'/5':''}</title></circle>`).join('');
+ const dots=v.map((s,i)=>`<circle data-sid="${esc(s.id)}" class="${an?'dotin':''}${s.id===pick?' sel':''}" style="animation-delay:${Math.min(i*.04,.8)}s" cx="${X(s.clicks)}" cy="${Y(s.time)}" r="6.5" fill="${tasteCol[s.taste]||'var(--bg)'}" fill-opacity=".9" stroke="var(--ink)" stroke-width="1.5"><title>${esc(bname(s.beanId))}: ${ri(s.clicks)} clicks, ${ri(s.time)}s${s.taste?' ('+s.taste+')':''}${s.rating?', '+s.rating+'/5':''}</title></circle>`).join('');
  $('chart').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Grinder clicks against shot time">${band}${g}${ring}${dots}</svg>`;
 }
+let pick=null;
+function pickShow(){
+ const s=shots.find(x=>x.id===pick);
+ if(!s||!view_().includes(s)){pick=null;$('dotinfo').innerHTML='';return}
+ $('dotinfo').innerHTML=rowHtml(s).replace('class="row','class="row pick');
+}
 function chart(){
+ pickShow();
  const all=view_(),m=M[metric],an=animChart;animChart=false;let v=all;
  $('charthint').textContent=metric==='spot'?(filter==='all'?'Pick one bean in the filter to see its own sweet spot, since grinder settings differ per bean. Each dot is a shot, clicks across and seconds up.':'Each dot is a shot, clicks across and seconds up. The shaded band marks 25 to 30 seconds.'):'';
  if(!v.length){$('chart').innerHTML=`<div class="empty">${shots.length?'No shots match these filters.':'No shots yet. Log your first one on the Log tab.'}</div>`;return}
@@ -852,25 +880,28 @@ function chart(){
  const X=i=>v.length===1?(pl+W-pr)/2:pl+i*(W-pl-pr)/(v.length-1);
  const Y=y=>pt+(hi-y)/(hi-lo)*(H-pt-pb);
  let g='';
- for(let k=0;k<=3;k++){const y=lo+(hi-lo)*k/3,py=Y(y);g+=`<line x1="${pl}" x2="${W-pr}" y1="${py}" y2="${py}" stroke="var(--line)" stroke-width="1"/><text x="${pl-8}" y="${py+4}" text-anchor="end">${metric==='ratio'?y.toFixed(1):Math.round(y*10)/10}</text>`}
+ let pv=null;for(let k=0;k<=3;k++){const y=lo+(hi-lo)*k/3,py=Y(y),lb=metric==='ratio'?rt(y):Math.round(y);g+=`<line x1="${pl}" x2="${W-pr}" y1="${py}" y2="${py}" stroke="var(--line)" stroke-width="1"/><text x="${pl-8}" y="${py+4}" text-anchor="end">${lb===pv?'':lb}</text>`;pv=lb}
  const band=m.band?`<rect x="${pl}" width="${W-pl-pr}" y="${Y(m.band[1])}" height="${Y(m.band[0])-Y(m.band[1])}" fill="var(--band)" rx="3"/>`:'';
  const pts=v.map((s,i)=>X(i)+','+Y(m.get(s))).join(' ');
- const dots=v.map((s,i)=>`<circle class="${an?'dotin':''}" style="animation-delay:${Math.min(i*.03+.35,1)}s" cx="${X(i)}" cy="${Y(m.get(s))}" r="5.5" fill="${tasteCol[s.taste]||'var(--bg)'}" stroke="var(--ink)" stroke-width="1.5"><title>${esc(bname(s.beanId))}, ${new Date(s.at).toLocaleDateString()}: ${m.fmt(m.get(s))}${s.taste?' ('+s.taste+')':''}</title></circle>`).join('');
+ const dots=v.map((s,i)=>`<circle data-sid="${esc(s.id)}" class="${an?'dotin':''}${s.id===pick?' sel':''}" style="animation-delay:${Math.min(i*.03+.35,1)}s" cx="${X(i)}" cy="${Y(m.get(s))}" r="5.5" fill="${tasteCol[s.taste]||'var(--bg)'}" stroke="var(--ink)" stroke-width="1.5"><title>${esc(bname(s.beanId))}, ${new Date(s.at).toLocaleDateString()}: ${m.fmt(m.get(s))}${s.taste?' ('+s.taste+')':''}</title></circle>`).join('');
  const bLine=hasB?`<line x1="${pl}" x2="${W-pr}" y1="${Y(bv)}" y2="${Y(bv)}" stroke="var(--btn)" stroke-width="1.5" stroke-dasharray="5 4"/><text x="${W-pr}" y="${Y(bv)-6}" text-anchor="end" style="fill:var(--btn);font-weight:600">Best</text>`:'';
  const step=Math.ceil(v.length/6);
  const xl=v.map((s,i)=>i%step===0?`<text x="${X(i)}" y="${H-6}" text-anchor="middle">${new Date(s.at).toLocaleDateString(undefined,{month:'short',day:'numeric'})}</text>`:'').join('');
  $('chart').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${m.name} per shot">${band}${g}${bLine}<polyline ${an?'class="draw" pathLength="1"':''} points="${pts}" fill="none" stroke="var(--ink)" stroke-width="1.5" stroke-linejoin="round"/>${dots}${xl}</svg>`;
 }
+function rowHtml(s){
+  const b=beanOf(s.beanId)||{},c=shotCost(b,s),rs=restOf(b,dstr(s.at)),isB=b.best===s.id;
+  return `<div class="row${s.id===flash?' flash':''}">
+  <div><div class="t">${esc(b.name||'Unknown bean')}</div><div class="m">${new Date(s.at).toLocaleDateString(undefined,{month:'short',day:'numeric'})}, ${tm(s.at)}${roastAgo(b,dstr(s.at))?' &middot; '+esc(roastAgo(b,dstr(s.at))):''}</div></div>
+  <div class="acts"><button class="q${isB?' on':''}" data-best="${esc(s.id)}">${icon('star')}${isB?'Best':'Set best'}</button><button class="q" data-edit="${esc(s.id)}">${icon('edit')}Edit</button><button class="q" data-del="${esc(s.id)}" aria-label="Delete shot">${icon('trash')}Delete</button></div>
+  <div class="d"><span>${s.dose}g in</span><span>${ri(s.yield)}g out</span><span>${rt(s.yield/s.dose)}</span><span>${ri(s.time)}s</span><span>${ri(s.clicks)} clicks</span>${isB?'<span class="bestchip">Best</span>':''}${s.drink?drinkPill(s.drink):''}${s.taste?`<span><i class="dot" style="background:${tasteCol[s.taste]}"></i>${s.taste}</span>`:''}${s.rating?`<span>${s.rating}/5</span>`:''}${c?`<span>${money(c)}</span>`:''}</div>
+  ${s.notes?`<div class="note">${esc(s.notes)}</div>`:''}</div>`;
+}
 function list(){
  const all=view_().reverse(),v=all.slice(0,lim);
  if(!v.length){$('list').innerHTML=`<div class="empty">${shots.length?'No shots match these filters.':'Your shots will appear here.'}</div>`;return}
  $('list').innerHTML=v.map(s=>{
-  const b=beanOf(s.beanId)||{},c=shotCost(b,s),rs=restOf(b,dstr(s.at)),isB=b.best===s.id;
-  return `<div class="row${s.id===flash?' flash':''}">
-  <div><div class="t">${esc(b.name||'Unknown bean')}</div><div class="m">${esc(b.roast||'')} roast &nbsp; ${new Date(s.at).toLocaleDateString(undefined,{month:'short',day:'numeric'})}, ${tm(s.at)}, day ${rs.n??'–'} since ${rs.w}</div></div>
-  <div class="acts"><button class="q${isB?' on':''}" data-best="${esc(s.id)}">${icon('star')}${isB?'Best':'Set best'}</button><button class="q" data-edit="${esc(s.id)}">${icon('edit')}Edit</button><button class="q" data-del="${esc(s.id)}" aria-label="Delete shot">${icon('trash')}Delete</button></div>
-  <div class="d"><span>${s.dose}g in</span><span>${s.yield}g out</span><span>1:${(s.yield/s.dose).toFixed(1)}</span><span>${s.time}s</span><span>${s.clicks} clicks</span>${isB?'<span class="bestchip">Best</span>':''}${s.drink?`<span>${esc(s.drink)}</span>`:''}${s.taste?`<span><i class="dot" style="background:${tasteCol[s.taste]}"></i>${s.taste}</span>`:''}${s.rating?`<span>${s.rating}/5</span>`:''}${c?`<span>${money(c)}</span>`:''}</div>
-  ${s.notes?`<div class="note">${esc(s.notes)}</div>`:''}</div>`;
+  return rowHtml(s);
  }).join('')+(all.length>lim?`<div class="more"><span>Showing ${v.length} of ${all.length}</span><button class="q" id="more">Show ${Math.min(30,all.length-lim)} more</button></div>`:'');
 }
 /* best shot, suggestions */
@@ -948,14 +979,14 @@ function latest(){
  const dl=(v,u)=>(v>0?'+':v<0?'\u2212':'')+Math.abs(+v.toFixed(1))+u;
  let vs='<span>First shot of this bean.</span>';
  if(prev){
-  const parts=[['Time',s.time-prev.time,'s'],['Yield',s.yield-prev.yield,'g'],['Dose',s.dose-prev.dose,'g'],['Clicks',s.clicks-prev.clicks,'']].filter(x=>x[1]!==0).map(x=>`<span>${x[0]} <b>${dl(x[1],x[2])}</b></span>`);
+  const parts=[['Time',ri(s.time)-ri(prev.time),'s'],['Yield',ri(s.yield)-ri(prev.yield),'g'],['Dose',s.dose-prev.dose,'g'],['Clicks',ri(s.clicks)-ri(prev.clicks),'']].filter(x=>x[1]!==0).map(x=>`<span>${x[0]} <b>${dl(x[1],x[2])}</b></span>`);
   vs='<span>Versus the previous shot of this bean</span>'+(parts.length?parts.join(''):'<span><b>same settings</b></span>');
  }
  const F=(k,v)=>`<div><span class="k">${k}</span><span class="v">${v}</span></div>`;
- $('latest').innerHTML=`<div class="top"><div><div class="t">${esc(b.name||'Unknown bean')}</div><div class="m">${new Date(s.at).toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})}, ${tm(s.at)}, day ${rs.n??'–'} since ${rs.w}</div></div><div class="acts"><button class="q${isB?' on':''}" data-best="${esc(s.id)}">${icon('star')}${isB?'Best':'Set best'}</button><button class="q" data-edit="${esc(s.id)}">${icon('edit')}Edit</button></div></div>
- <div class="lchips">${isB?'<span class="bestchip">Best shot</span>':''}${s.drink?`<span>${esc(s.drink)}</span>`:''}${s.taste?`<span><i class="dot" style="background:${tasteCol[s.taste]}"></i>${esc(s.taste)}</span>`:''}${s.rating?`<span>${s.rating}/5</span>`:''}${c?`<span>${money(c)}</span>`:''}</div>
- <div class="gauges">${gauge('Time',s.time,s.time+'s',0,45,25,30,s.time<25?'Fast, under 25s':tOk?'In target range':'Slow, over 30s',tOk,'0s','45s')}${gauge('Ratio',ratio,'1:'+ratio.toFixed(1),1,3.5,1.8,2.5,ratio<1.8?'Short, under 1:1.8':rOk?'In typical range':'Long, over 1:2.5',rOk,'1:1','1:3.5')}</div>
- <div class="facts">${F('Dose in',s.dose+'g')}${F('Yield out',s.yield+'g')}${F('Grinder clicks',s.clicks||'–')}${F('Flow',flow.toFixed(1)+' g/s')}</div>
+ $('latest').innerHTML=`<div class="top"><div><div class="t">${esc(b.name||'Unknown bean')}</div><div class="m">${new Date(s.at).toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})}, ${tm(s.at)}${roastAgo(b,dstr(s.at))?' &middot; '+esc(roastAgo(b,dstr(s.at))):''}</div></div><div class="acts"><button class="q${isB?' on':''}" data-best="${esc(s.id)}">${icon('star')}${isB?'Best':'Set best'}</button><button class="q" data-edit="${esc(s.id)}">${icon('edit')}Edit</button></div></div>
+ <div class="lchips">${isB?'<span class="bestchip">Best shot</span>':''}${s.drink?drinkPill(s.drink):''}${s.taste?`<span><i class="dot" style="background:${tasteCol[s.taste]}"></i>${esc(s.taste)}</span>`:''}${s.rating?`<span>${s.rating}/5</span>`:''}${c?`<span>${money(c)}</span>`:''}</div>
+ <div class="gauges">${gauge('Time',s.time,ri(s.time)+'s',0,45,25,30,s.time<25?'Fast, under 25s':tOk?'In target range':'Slow, over 30s',tOk,'0s','45s')}${gauge('Ratio',ratio,rt(ratio),1,3.5,1.8,2.5,ratio<1.8?'Short, under 1:1.8':rOk?'In typical range':'Long, over 1:2.5',rOk,'1:1','1:3.5')}</div>
+ <div class="facts">${F('Dose in',s.dose+'g')}${F('Yield out',ri(s.yield)+'g')}${F('Grinder clicks',s.clicks?ri(s.clicks):'–')}${F('Flow',flow.toFixed(1)+' g/s')}</div>
  ${s.notes?`<div class="note" style="margin-top:16px;color:var(--mute);font-style:italic;font-size:13px">${esc(s.notes)}</div>`:''}
  <div class="vs">${vs}</div>${nextHtml(s,b)}`;
 }
@@ -965,7 +996,7 @@ function week(){
  const cnt={};v.forEach(s=>cnt[s.beanId]=(cnt[s.beanId]||0)+1);
  const top=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0];
  const rated=v.filter(s=>s.rating),spent=v.reduce((a,s)=>a+shotCost(beanOf(s.beanId),s),0);
- $('week').innerHTML=`<div><b>${v.length}</b><span>shots pulled</span></div><div><b class="trunc">${esc(bname(top))}</b><span>favourite bean, ${cnt[top]} ${cnt[top]===1?'shot':'shots'}</span></div><div><b>1:${(v.reduce((a,s)=>a+s.yield/s.dose,0)/v.length).toFixed(1)}</b><span>average ratio</span></div><div><b>${rated.length?(rated.reduce((a,s)=>a+s.rating,0)/rated.length).toFixed(1)+'/5':'–'}</b><span>average rating</span></div>`+(spent?`<div><b>${money(spent)}</b><span>of beans used</span></div>`:'');
+ $('week').innerHTML=`<div><b>${v.length}</b><span>shots pulled</span></div><div><b class="trunc">${esc(bname(top))}</b><span>favourite bean, ${cnt[top]} ${cnt[top]===1?'shot':'shots'}</span></div><div><b>${rt(v.reduce((a,s)=>a+s.yield/s.dose,0)/v.length)}</b><span>average ratio</span></div><div><b>${rated.length?(rated.reduce((a,s)=>a+s.rating,0)/rated.length).toFixed(1)+'/5':'–'}</b><span>average rating</span></div>`+(spent?`<div><b>${money(spent)}</b><span>of beans used</span></div>`:'');
 }
 function render(){
  if(filter!=='all'&&!beanOf(filter))filter='all';
