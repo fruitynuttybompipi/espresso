@@ -174,6 +174,8 @@ button:active{transform:scale(.96)}
 @keyframes pulse{50%{opacity:.25;transform:scale(.7)}}
 #toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top,0px));transform:translate(-50%,-18px);background:var(--btn);color:#fff;box-shadow:0 8px 24px rgba(255,89,38,.35);padding:10px 18px;border-radius:99px;font-size:14px;font-weight:600;display:flex;gap:8px;align-items:center;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:9}
 #toast .i{color:#fff}
+#toast.act{pointer-events:auto}
+.tundo{background:transparent;border:0;border-left:1px solid rgba(255,255,255,.5);border-radius:0;color:#fff;font:inherit;font-weight:700;padding:0 0 0 12px;margin-left:4px;text-decoration:underline;cursor:pointer}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 .empty::before{content:'';display:block;width:34px;height:34px;margin:0 auto 12px;background:var(--mute);opacity:.45;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z'/%3E%3Cpath d='M16 10h1.5a2.5 2.5 0 0 1 0 5H16'/%3E%3Cpath d='M8 3v2M12 3v2'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z'/%3E%3Cpath d='M16 10h1.5a2.5 2.5 0 0 1 0 5H16'/%3E%3Cpath d='M8 3v2M12 3v2'/%3E%3C/svg%3E") center/contain no-repeat}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;animation-delay:0s!important;transition-duration:.01ms!important}}
@@ -279,6 +281,19 @@ circle.sel{stroke:var(--btn)!important;stroke-width:3!important;opacity:1;transf
 .f.need .stp{box-shadow:0 1.5px 0 var(--btn);padding-bottom:4px}
 .f.need{animation:shake .4s}
 @keyframes shake{20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+.fun{gap:22px 32px}
+.fixbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:10px 14px;margin-bottom:8px;border:1px dashed var(--btn);border-radius:12px;font-size:13px;color:var(--mute)}
+.fixbar[hidden]{display:none}
+.fixbar.in{animation:rise .4s ease both}
+.fixbar.out,.fixrow.out,.fx.done{overflow:hidden;animation:fold .32s ease forwards}
+.fixbar.out{max-height:90px}
+.fixrow.out,.fx.done{max-height:60px}
+@keyframes fold{to{opacity:0;transform:translateY(-6px);max-height:0;padding-top:0;padding-bottom:0;margin-top:0;margin-bottom:0;border-width:0}}
+.fx button.picked{background:var(--btn);border-color:var(--btn);color:#fff;animation:numpop .25s}
+.fx.done button.picked{animation:numpop .25s}
+.fixrow{grid-column:1/-1;display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.fx{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px;color:var(--mute)}
+.fx>span{min-width:44px}
 .bestchip{color:var(--btn);font-weight:600}
 .lchips .bestchip{background:transparent;border:1px solid var(--btn);font-weight:600}
 .more{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 0 0;color:var(--mute);font-size:13px}
@@ -420,7 +435,12 @@ html,body{overflow-x:hidden;overflow-x:clip;max-width:100%}
 
 <section>
 <h2>Shots</h2>
+<div class="fixbar" id="fixbar" hidden></div>
 <div id="list"></div>
+</section>
+<section id="fun-sec" hidden>
+<h2>Fun facts</h2>
+<div class="card"><div class="stats fun" id="fun" style="margin:0"></div><div class="info" style="margin-top:12px">All time, across every bean.</div></div>
 </section>
 </div>
 
@@ -521,7 +541,7 @@ const IC={
 const icon=n=>`<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n]}</svg>`;
 const setBtn=(el,t,i)=>{el.innerHTML=icon(i)+esc(t)};
 const buzz=ms=>{try{if(navigator.vibrate)navigator.vibrate(ms)}catch(e){}};
-const toast=(m,w)=>{const t=$('toast');t.innerHTML=icon(w?'bulb':'check')+esc(m);t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1900)};
+const toast=(m,w,undo)=>{const t=$('toast');t.innerHTML=icon(w?'bulb':'check')+esc(m)+(undo?'<button class="tundo" type="button">Undo</button>':'');t.classList.toggle('act',!!undo);if(undo)t.querySelector('.tundo').onclick=undo;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),undo?5000:1900)};
 
 /* data: beans, shots, deleted (ids of removed beans and shots) */
 function norm(d){
@@ -624,7 +644,20 @@ async function sync(){
  if(again){again=false;sync()}
 }
 function queueSync(){if(!cfg.token||!cfg.repo)return;setSync('Saving');clearTimeout(timer);timer=setTimeout(sync,1200)}
-const commit=()=>{persist();queueSync();render()};
+let undoRm=null,undoT=null;
+const flushDel=()=>{if(!undoRm)return;clearTimeout(undoT);undoRm=null;persist();queueSync()};
+const commit=()=>{flushDel();persist();queueSync();render()};
+function softDel(rm,msg){
+ flushDel();undoRm=rm;render();
+ toast(msg,0,()=>{
+  const r=undoRm;if(!r)return;clearTimeout(undoT);undoRm=null;
+  const ids=new Set([...r.beans,...r.shots].map(x=>x.id));
+  beans.push(...r.beans);shots.push(...r.shots);
+  for(let i=deleted.length;i--;)if(ids.has(deleted[i]))deleted.splice(i,1);
+  persist();queueSync();render();toast('Restored');
+ });
+ undoT=setTimeout(flushDel,5000);
+}
 
 /* navigation */
 let view='log',last='log';
@@ -652,7 +685,8 @@ function resetBeanForm(){
  $('bn-title').textContent='New bean';setBtn($('bn-save'),'Add bean','plus');$('bn-cancel').hidden=true;
 }
 $('bn-cancel').onclick=resetBeanForm;
-$('bean-filter').onclick=e=>{const k=e.target.dataset.bf;if(k){bf=k;renderBeans()}};
+let bstag=false;
+$('bean-filter').onclick=e=>{const b=e.target.closest('[data-bf]');if(!b||b.dataset.bf===bf)return;bf=b.dataset.bf;bstag=true;buzz(8);renderBeans()};
 $('bn-save').onclick=()=>{
  const name=$('bn-name').value.trim();
  document.querySelectorAll('.f.need').forEach(f=>f.classList.remove('need'));
@@ -685,11 +719,11 @@ $('bean-list').onclick=e=>{
  if(a==='del'){
   if(armed!==id){armed=id;clearTimeout(armT);armT=setTimeout(()=>{armed=null;renderBeans()},3500);renderBeans();return}
   armed=null;
-  const gone=shots.filter(x=>x.beanId===id).map(x=>x.id);
-  deleted.push(id,...gone);
+  const rm={beans:beans.filter(x=>x.id===id),shots:shots.filter(x=>x.beanId===id)};
+  deleted.push(id,...rm.shots.map(x=>x.id));
   beans=beans.filter(x=>x.id!==id);shots=shots.filter(x=>x.beanId!==id);
   if(editing===id)resetBeanForm();
-  commit();toast('Bean deleted');
+  softDel(rm,'Bean deleted');
  }
 };
 const fmtD=iso=>iso?new Date(iso+'T00:00:00').toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}):'';
@@ -720,6 +754,7 @@ function renderBeans(){
  $('bean-filter').innerHTML=[['all','All',beans.length],['new','New beans',act.length],['done','Finished',done.length]].map(([k,t,n])=>`<button data-bf="${k}" aria-pressed="${bf===k}">${t} ${n}</button>`).join('');
  const grp=(t,list,empty)=>`<div class="grp">${t}<span>${list.length}</span></div>`+(list.length?list.map(card).join(''):`<div class="empty" style="padding:18px 0">${empty}</div>`);
  $('bean-list').innerHTML=(bf!=='done'?grp('New beans',act,'No new beans. Add one above.'):'')+(bf==='done'||(bf==='all'&&done.length)?grp('Finished',done,'No finished beans yet.'):'');
+ if(bstag){bstag=false;$('bean-list').querySelectorAll('.grp,.bean,.empty').forEach((e,k)=>{e.style.animation='rise .42s cubic-bezier(.2,.8,.3,1) both';e.style.animationDelay=Math.min(k*.07,.5)+'s'})}
 }
 
 /* log */
@@ -829,15 +864,29 @@ $('chart').onclick=e=>{
  $('chart').querySelectorAll('circle.sel').forEach(x=>x.classList.remove('sel'));
  if(pick)c.classList.add('sel');
 };
+$('fixbar').onclick=e=>{
+ if(e.target.closest('#fixtoggle')){fm=!fm;lim=30;stag=true;list();return}
+ if(e.target.closest('#fixign')){
+  const m=shots.filter(missing);if(!m.length)return;
+  $('fixbar').classList.add('out');document.querySelectorAll('.fixrow').forEach(r=>r.classList.add('out'));buzz(10);
+  setTimeout(()=>{m.forEach(x=>{x.ign=1;x.u=Date.now()});fm=false;commit();
+  toast('Ignored '+m.length+(m.length===1?' shot':' shots'),0,()=>{m.forEach(x=>{delete x.ign;x.u=Date.now()});commit();toast('Restored')})},330);
+ }
+};
 $('dotinfo').onclick=e=>$('list').onclick(e);
 $('list').onclick=e=>{
  const t=e.target.closest('button');if(!t)return;
  if(t.id==='more'){lim+=30;list();return}
+ if(t.dataset.set){
+  const x=shots.find(z=>String(z.id)===t.dataset.id);if(!x||t.classList.contains('picked'))return;
+  t.classList.add('picked');t.closest('.fx').classList.add('done');buzz(10);
+  setTimeout(()=>{x[t.dataset.set]=t.dataset.v;x.u=Date.now();flash=x.id;commit();toast('Shot updated')},330);return}
  if(t.dataset.best)return toggleBest(t.dataset.best);
  if(t.dataset.edit)return startEdit(t.dataset.edit);
  const id=t.dataset.del;if(!id)return;
  if(String(editShot)===id)endEdit();
- shots=shots.filter(s=>String(s.id)!==id);deleted.push(isNaN(id)?id:+id);commit();toast('Shot deleted');
+ const gone=shots.filter(s=>String(s.id)===id);
+ shots=shots.filter(s=>String(s.id)!==id);deleted.push(...gone.map(s=>s.id));softDel({beans:[],shots:gone},'Shot deleted');
 };
 
 /* trend */
@@ -906,20 +955,32 @@ function chart(){
  const xl=v.map((s,i)=>i%step===0?`<text x="${X(i)}" y="${H-6}" text-anchor="middle">${new Date(s.at).toLocaleDateString(undefined,{month:'short',day:'numeric'})}</text>`:'').join('');
  $('chart').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${m.name} per shot">${band}${g}${bLine}<polyline ${an?'class="draw" pathLength="1"':''} points="${pts}" fill="none" stroke="var(--ink)" stroke-width="1.5" stroke-linejoin="round"/>${dots}${xl}</svg>`;
 }
+const TASTES=['Sour','Balanced','Bitter','Diluted'];
+const missing=s=>(!s.drink||!s.taste)&&!s.ign;
+function fixHtml(s){
+ const g=(k,l,a)=>`<div class="fx"><span>${l}</span>${a.map(v=>`<button class="q" data-set="${k}" data-v="${v}" data-id="${esc(s.id)}">${v}</button>`).join('')}</div>`;
+ return `<div class="fixrow">${s.drink?'':g('drink','Drink',['Black','White'])}${s.taste?'':g('taste','Taste',TASTES)}</div>`;
+}
 function rowHtml(s){
   const b=beanOf(s.beanId)||{},c=shotCost(b,s),rs=restOf(b,dstr(s.at)),isB=b.best===s.id;
   return `<div class="row${s.id===flash?' flash':''}">
   <div><div class="t">${esc(b.name||'Unknown bean')}</div><div class="m">${new Date(s.at).toLocaleDateString(undefined,{month:'short',day:'numeric'})}, ${tm(s.at)}${roastAgo(b,dstr(s.at))?' &middot; '+esc(roastAgo(b,dstr(s.at))):''}</div></div>
   <div class="acts"><button class="q${isB?' on':''}" data-best="${esc(s.id)}">${icon('star')}${isB?'Best':'Set best'}</button><button class="q" data-edit="${esc(s.id)}">${icon('edit')}Edit</button><button class="q" data-del="${esc(s.id)}" aria-label="Delete shot">${icon('trash')}Delete</button></div>
   <div class="d"><span>${s.dose}g in</span><span>${ri(s.yield)}g out</span><span>${rt(s.yield/s.dose)}</span><span>${ri(s.time)}s</span><span>${ri(s.clicks)} clicks</span>${isB?'<span class="bestchip">Best</span>':''}${s.drink?drinkPill(s.drink):''}${s.taste?`<span><i class="dot" style="background:${tasteCol[s.taste]}"></i>${s.taste}</span>`:''}${s.rating?`<span>${s.rating}/5</span>`:''}${c?`<span>${money(c)}</span>`:''}</div>
-  ${s.notes?`<div class="note">${esc(s.notes)}</div>`:''}</div>`;
+  ${s.notes?`<div class="note">${esc(s.notes)}</div>`:''}${missing(s)?fixHtml(s):''}</div>`;
 }
+let fm=false,stag=false;
 function list(){
- const all=view_().reverse(),v=all.slice(0,lim);
+ const nm=shots.filter(missing).length;if(!nm)fm=false;
+ const was=$('fixbar').hidden;$('fixbar').hidden=!nm;$('fixbar').classList.remove('out');
+ if(nm&&was){$('fixbar').classList.remove('in');void $('fixbar').offsetWidth;$('fixbar').classList.add('in')}
+ $('fixbar').innerHTML=nm?`<span>${nm} older ${nm===1?'shot is':'shots are'} missing a drink or taste.</span><span class="acts"><button class="q" id="fixtoggle">${fm?'Show all':'Fix them'}</button><button class="q" id="fixign">Ignore</button></span>`:'';
+ const all=(fm?view_().filter(missing):view_()).reverse(),v=all.slice(0,lim);
  if(!v.length){$('list').innerHTML=`<div class="empty">${shots.length?'No shots match these filters.':'Your shots will appear here.'}</div>`;return}
  $('list').innerHTML=v.map(s=>{
   return rowHtml(s);
  }).join('')+(all.length>lim?`<div class="more"><span>Showing ${v.length} of ${all.length}</span><button class="q" id="more">Show ${Math.min(30,all.length-lim)} more</button></div>`:'');
+ if(stag){stag=false;$('list').querySelectorAll('.row').forEach((r,k)=>{r.style.animation='rise .4s ease both';r.style.animationDelay=Math.min(k*.06,.45)+'s'})}
 }
 /* best shot, suggestions */
 function toggleBest(id){
@@ -1007,6 +1068,12 @@ function latest(){
  ${s.notes?`<div class="note" style="margin-top:16px;color:var(--mute);font-style:italic;font-size:13px">${esc(s.notes)}</div>`:''}
  <div class="vs">${vs}</div>${nextHtml(s,b)}`;
 }
+function fun(){
+ $('fun-sec').hidden=!shots.length;if(!shots.length)return;
+ const n=f=>shots.filter(f).length,g=shots.reduce((a,s)=>a+s.dose,0),ml=shots.reduce((a,s)=>a+s.yield,0),bags=new Set(shots.map(s=>s.beanId)).size;
+ const w=v=>v>=1000?(+(v/1000).toFixed(1))+' kg':Math.round(v)+' g',l=v=>v>=1000?(+(v/1000).toFixed(1))+' L':Math.round(v)+' ml';
+ $('fun').innerHTML=`<div><b>${shots.length}</b><span>shots pulled</span></div><div><b>${w(g)}</b><span>beans used, from ${bags} ${bags===1?'bean':'beans'}</span></div><div><b>${n(s=>s.drink==='Black')}</b><span>cups of black</span></div><div><b>${n(s=>s.drink==='White')}</b><span>cups of white</span></div><div><b>${l(ml)}</b><span>of espresso poured</span></div>`;
+}
 function week(){
  const v=shots.filter(s=>s.at>=Date.now()-7*864e5);
  if(!v.length){$('week').innerHTML='<div class="info">No shots in the last 7 days.</div>';return}
@@ -1018,7 +1085,7 @@ function week(){
 function render(){
  if(filter!=='all'&&!beanOf(filter))filter='all';
  $('filter').innerHTML='<option value="all">All beans</option>'+beans.map(b=>`<option value="${esc(b.id)}"${b.id===filter?' selected':''}>${esc(b.name)}</option>`).join('');
- renderSel();renderBeans();week();latest();stats();chart();list();flash=null;
+ renderSel();renderBeans();week();fun();latest();stats();chart();list();flash=null;
 }
 
 /* pour over */
