@@ -285,6 +285,10 @@ circle.sel{stroke:var(--btn)!important;stroke-width:3!important;opacity:1;transf
 .fun{gap:22px 32px}
 button.q,.row .acts button.q{white-space:nowrap}
 .row .acts button.q{flex:1 1 auto}
+.view-in.sw>section{animation-name:slidel}
+.view-in.sw.swr>section{animation-name:slider}
+@keyframes slidel{from{opacity:0;transform:translateX(44px)}to{opacity:1;transform:none}}
+@keyframes slider{from{opacity:0;transform:translateX(-44px)}to{opacity:1;transform:none}}
 .fixbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:10px 14px;margin-bottom:8px;border:1px dashed var(--btn);border-radius:12px;font-size:13px;color:var(--mute)}
 .fixbar[hidden]{display:none}
 .fixbar.in{animation:rise .4s ease both}
@@ -665,6 +669,22 @@ function softDel(rm,msg){
 
 /* navigation */
 let view='log',last='log';
+/* swipe left/right between Log, Beans, Overview */
+const TABS=['log','beans','overview'];
+(()=>{
+ let x0,y0,t0,ok=false;
+ const blocked=e=>{for(let n=e;n&&n!==document.body;n=n.parentElement){
+  if(/^(INPUT|SELECT|TEXTAREA)$/.test(n.tagName)||n.classList.contains('stp'))return true;
+  if(n.scrollWidth>n.clientWidth+2&&/auto|scroll/.test(getComputedStyle(n).overflowX))return true}return false};
+ document.addEventListener('touchstart',e=>{const t=e.touches[0];x0=t.clientX;y0=t.clientY;t0=Date.now();ok=e.touches.length===1&&TABS.includes(view)&&!blocked(e.target)},{passive:true});
+ document.addEventListener('touchend',e=>{
+  if(!ok)return;ok=false;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;
+  if(Math.abs(dx)<70||Math.abs(dx)<Math.abs(dy)*1.7||Date.now()-t0>700)return;
+  const i=TABS.indexOf(view)+(dx<0?1:-1);if(i<0||i>=TABS.length)return;
+  const el=$('v-'+TABS[i]);el.classList.toggle('swr',dx>0);el.classList.add('sw');buzz(8);show(TABS[i]);
+  setTimeout(()=>el.classList.remove('sw','swr'),1100);
+ },{passive:true});
+})();
 function show(v){
  if(v!=='settings')last=v;
  view=v;
@@ -1200,7 +1220,7 @@ IC.minus='<path d="M5 12h14"/>';
 const rd=v=>Math.round(v*10)/10;
 const WT=[
  {id:'dose',step:.1,fast:.5,def:18,max:60,dec:1,chips:[16,17,18,19,20]},
- {id:'yield',step:.5,fast:2.5,def:36,max:200,dec:1,ratio:[1.5,2,2.5]},
+ {id:'yield',step:.1,fast:.5,def:36,max:200,dec:1,ratio:[1.5,2,2.5]},
  {id:'time',step:1,fast:5,def:28,max:120,dec:0,unit:'s',chips:[24,26,28,30,32]},
  {id:'clicks',step:1,fast:5,def:14,max:200,dec:0},
  {id:'bn-weight',step:10,fast:50,def:250,max:5000,dec:0,chips:[100,250,500,1000]}
