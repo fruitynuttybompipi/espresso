@@ -455,13 +455,13 @@ html,body{overflow-x:hidden;overflow-x:clip;max-width:100%}
 <div class="f span2"><label class="l" for="bn-name">Bean name</label><input type="text" id="bn-name" placeholder="Ethiopia Guji, Origin Roasters" autocomplete="off"></div>
 <div class="f span2"><label class="l" for="bn-date">Date of purchase</label><input type="date" id="bn-date"></div>
 <div class="f span2"><label class="l" for="bn-roasted">Roast date</label><input type="date" id="bn-roasted"></div>
-<div class="f span2"><label class="l" for="bn-weight">Bag weight (g)</label><input type="number" id="bn-weight" step="1" inputmode="decimal" placeholder="250"></div>
+<div class="f span2"><label class="l" for="bn-weight">Bag weight (g, optional)</label><input type="number" id="bn-weight" step="1" inputmode="decimal" placeholder="250"></div>
 <div class="f span2"><label class="l" for="bn-price">Bag price (optional)</label><input type="number" id="bn-price" step="0.01" inputmode="decimal" placeholder="68"></div>
 <div class="f span2" id="bn-fin-wrap" hidden><label class="l" for="bn-finished">Finished on (clear to reopen)</label><input type="date" id="bn-finished"></div>
 <div class="f span4"><span class="l">Roast</span>
 <div class="seg"><label><input type="radio" name="roast" value="Light"><span>Light</span></label><label><input type="radio" name="roast" value="Medium"><span>Medium</span></label><label><input type="radio" name="roast" value="Dark"><span>Dark</span></label></div></div>
 <div class="f span4"><span class="l">Flavour tags</span>
-<div class="seg"><label><input type="checkbox" name="tag" value="chocolate"><span>Chocolate</span></label><label><input type="checkbox" name="tag" value="fruity"><span>Fruity</span></label><label><input type="checkbox" name="tag" value="nutty"><span>Nutty</span></label><label><input type="checkbox" name="tag" value="toffee"><span>Toffee</span></label><label><input type="checkbox" name="tag" value="wine"><span>Wine</span></label><label><input type="checkbox" name="tag" value="berry"><span>Berry</span></label><label><input type="checkbox" name="tag" value="malty"><span>Malty</span></label><label><input type="checkbox" name="tag" value="hazelnut"><span>Hazelnut</span></label></div></div>
+<div class="seg"><label><input type="checkbox" name="tag" value="chocolate"><span>Chocolate</span></label><label><input type="checkbox" name="tag" value="fruity"><span>Fruity</span></label><label><input type="checkbox" name="tag" value="nutty"><span>Nutty</span></label><label><input type="checkbox" name="tag" value="toffee"><span>Toffee</span></label><label><input type="checkbox" name="tag" value="wine"><span>Wine</span></label><label><input type="checkbox" name="tag" value="berry"><span>Berry</span></label><label><input type="checkbox" name="tag" value="malty"><span>Malty</span></label><label><input type="checkbox" name="tag" value="hazelnut"><span>Hazelnut</span></label><label><input type="checkbox" name="tag" value="floral"><span>Floral</span></label><label><input type="checkbox" name="tag" value="caramel"><span>Caramel</span></label></div></div>
 </div>
 <div class="acts" style="margin-top:22px"><button id="bn-save">Add bean</button><button class="q" id="bn-cancel" hidden>Cancel</button></div>
 </div>
@@ -694,7 +694,7 @@ $('bean-filter').onclick=e=>{const b=e.target.closest('[data-bf]');if(!b||b.data
 $('bn-save').onclick=()=>{
  const name=$('bn-name').value.trim();
  document.querySelectorAll('.f.need').forEach(f=>f.classList.remove('need'));
- const bad=[[!name,'bn-name'],[!$('bn-date').value,'bn-date'],[!$('bn-roasted').value,'bn-roasted'],[!val('bn-weight'),'bn-weight'],[!radio('roast'),'roast'],[!document.querySelector('input[name=tag]:checked'),'tag']].filter(x=>x[0]).map(x=>{const e=document.getElementById(x[1])||document.querySelector('input[name='+x[1]+']');return e.closest('.f')});
+ const bad=[[!name,'bn-name'],[!$('bn-date').value,'bn-date'],[!$('bn-roasted').value,'bn-roasted'],[!radio('roast'),'roast'],[!document.querySelector('input[name=tag]:checked'),'tag']].filter(x=>x[0]).map(x=>{const e=document.getElementById(x[1])||document.querySelector('input[name='+x[1]+']');return e.closest('.f')});
  if(bad.length){
   bad.forEach(f=>{f.classList.remove('need');void f.offsetWidth;f.classList.add('need')});
   bad[0].scrollIntoView({block:'center',behavior:'smooth'});buzz(30);toast('Fill in the highlighted fields',1);return}
