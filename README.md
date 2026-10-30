@@ -40,18 +40,6 @@ It is a single static page with no build step and no dependencies, so it runs an
 - Dark (default) and light themes
 - First-visit walkthrough, with a link to the how-to guide
 
-## Quick start
-
-1. Create a new **public** repository, for example `dialed`.
-2. Upload these files to the root of it:
-   - `index.html`
-   - `Dialed-how-to-guide.pdf`
-   - `README.md`
-3. Go to **Settings, Pages**. Under Branch choose `main` and `/ (root)`, then save.
-4. After a minute or two, open `https://YOUR-USERNAME.github.io/dialed/`.
-
-Keep the PDF's file name exactly as it is. The app links to it by that name.
-
 ## Sync across devices (optional)
 
 Without sync, each device keeps its own log in that browser. To share one log between your phone and laptop, sync to a private repo.
